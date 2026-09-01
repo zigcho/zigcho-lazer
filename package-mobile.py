@@ -33,11 +33,11 @@ def write_checksum(path: Path) -> Path:
     return checksum
 
 
-def write_metadata(path: Path, platform: str, version: str, zigcho: str, osu: str) -> Path:
+def write_metadata(path: Path, platform: str, version: str, client: str, osu: str) -> Path:
     metadata = path.with_suffix(path.suffix + ".metadata.txt")
     metadata.write_text(
         f"client_version={version}\n"
-        f"zigcho_revision={zigcho}\n"
+        f"client_revision={client}\n"
         f"osu_revision={osu}\n"
         f"runtime={platform}\n"
         "client_lane=production\n"
@@ -172,7 +172,7 @@ def main() -> None:
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--version", required=True)
-    parser.add_argument("--zigcho-revision", required=True)
+    parser.add_argument("--client-revision", required=True)
     parser.add_argument("--osu-revision", required=True)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
@@ -195,7 +195,7 @@ def main() -> None:
     else:
         package_ios(args.input, destination)
     checksum = write_checksum(destination)
-    metadata = write_metadata(destination, args.platform, args.version, args.zigcho_revision, args.osu_revision)
+    metadata = write_metadata(destination, args.platform, args.version, args.client_revision, args.osu_revision)
     print(destination)
     print(checksum)
     print(metadata)

@@ -9,17 +9,17 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $ScriptDir = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $ScriptDir "../..")).Path
+$RepoRoot = $ScriptDir
 $CheckoutPath = (Resolve-Path $Checkout).Path
 $Version = (Get-Content -Raw (Join-Path $ScriptDir "client-version.txt")).Trim()
 $OsuRevision = (Get-Content -Raw (Join-Path $ScriptDir "upstream-commit.txt")).Trim()
-$ZigchoRevision = (& git -C $RepoRoot rev-parse HEAD).Trim()
+$ClientRevision = (& git -C $RepoRoot rev-parse HEAD).Trim()
 
-if ($LASTEXITCODE -ne 0 -or $ZigchoRevision -notmatch "^[0-9a-f]{40}$") {
-    throw "could not read the zigcho revision"
+if ($LASTEXITCODE -ne 0 -or $ClientRevision -notmatch "^[0-9a-f]{40}$") {
+    throw "could not read the client revision"
 }
-if ($env:GITHUB_SHA -and $env:GITHUB_SHA -ne $ZigchoRevision) {
-    throw "checked out zigcho revision does not match GITHUB_SHA"
+if ($env:GITHUB_SHA -and $env:GITHUB_SHA -ne $ClientRevision) {
+    throw "checked out client revision does not match GITHUB_SHA"
 }
 
 $Dotnet = if ($env:ZIGCHO_DOTNET) { $env:ZIGCHO_DOTNET } else { "dotnet" }
@@ -47,7 +47,7 @@ try {
         "-p:Version=$Version" `
         "-p:FileVersion=$NumericVersion" `
         "-p:AssemblyVersion=$NumericVersion" `
-        "-p:InformationalVersion=$Version+zigcho.$($ZigchoRevision.Substring(0, 8)).osu.$($OsuRevision.Substring(0, 8))" `
+        "-p:InformationalVersion=$Version+client.$($ClientRevision.Substring(0, 8)).osu.$($OsuRevision.Substring(0, 8))" `
         -p:DebugType=None -p:DebugSymbols=false
     if ($LASTEXITCODE -ne 0) { throw "Windows publish failed" }
 
@@ -56,7 +56,7 @@ try {
         "--publish-dir", $PublishDirectory,
         "--output-dir", $OutputDirectory,
         "--version", $Version,
-        "--zigcho-revision", $ZigchoRevision,
+        "--client-revision", $ClientRevision,
         "--osu-revision", $OsuRevision,
         "--zigcho-license", (Join-Path $RepoRoot "LICENSE"),
         "--osu-license", (Join-Path $CheckoutPath "LICENCE")

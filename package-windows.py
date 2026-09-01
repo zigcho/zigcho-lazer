@@ -44,7 +44,7 @@ def main() -> None:
     parser.add_argument("--publish-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--version", required=True)
-    parser.add_argument("--zigcho-revision", required=True)
+    parser.add_argument("--client-revision", required=True)
     parser.add_argument("--osu-revision", required=True)
     parser.add_argument("--zigcho-license", type=Path, required=True)
     parser.add_argument("--osu-license", type=Path, required=True)
@@ -75,7 +75,7 @@ def main() -> None:
 
     version_text = (
         f"client_version={args.version}\n"
-        f"zigcho_revision={args.zigcho_revision}\n"
+        f"client_revision={args.client_revision}\n"
         f"osu_revision={args.osu_revision}\n"
         "runtime=win-x64\n"
         "self_contained=true\n"
