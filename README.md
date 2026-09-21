@@ -24,6 +24,8 @@ the server contract still lives in [`zigcho/zigcho`](https://github.com/zigcho/z
 
 ## builds
 
+the current client is `0.1.0-alpha.16`, based on osu! `2026.921.0` and .net 10. [what changed](updates/0.1.0-alpha.16.md).
+
 release builds happen on GitHub runners, not on somebody's laptop.
 
 ```sh

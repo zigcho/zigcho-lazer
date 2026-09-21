@@ -70,6 +70,7 @@ jobs:
           test -f "zigcho-lazer-${CLIENT_VERSION}-linux-x64.zip"
           test -f "zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk"
           test -f "zigcho-lazer-${CLIENT_VERSION}-ios-arm64.ipa"
+          upstream=$(tr -d '\r\n' < ../../upstream-commit.txt)
           for checksum in *.sha256; do
             sha256sum --check "$checksum"
           done
@@ -78,6 +79,7 @@ jobs:
             metadata=$(unzip -p "zigcho-lazer-${CLIENT_VERSION}-${runtime}.zip" '*/VERSION.txt')
             printf '%s\n' "$metadata" | grep -Fqx "client_version=${CLIENT_VERSION}"
             printf '%s\n' "$metadata" | grep -Fqx "client_revision=${SOURCE_REVISION}"
+            printf '%s\n' "$metadata" | grep -Fqx "osu_revision=${upstream}"
           done
           for package in \
             "zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk" \
@@ -87,6 +89,7 @@ jobs:
             test -f "$metadata"
             grep -Fqx "client_version=${CLIENT_VERSION}" "$metadata"
             grep -Fqx "client_revision=${SOURCE_REVISION}" "$metadata"
+            grep -Fqx "osu_revision=${upstream}" "$metadata"
           done
 
       - name: publish the prerelease
@@ -106,4 +109,4 @@ jobs:
             --target "$SOURCE_REVISION" \
             --title "zigcho!lazer ${CLIENT_VERSION}" \
             --prerelease \
-            --generate-notes
+            --notes-file "updates/${CLIENT_VERSION}.md"

@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  OSU_REVISION: 12df2e4ff254975f4b66ae9efda808837ee9beea
+  OSU_REVISION: aaa75b7c0a9f21d558ce84cd0ffac6c739bad8e7
   CLIENT_TEST_FILTER: FullyQualifiedName~TrustedDomainOnlineStoreTest|FullyQualifiedName~PollingChatClientTest|FullyQualifiedName~ZigchoPollingPresenceTest|FullyQualifiedName~ZigchoPlaylistRoomResponseTest|FullyQualifiedName~ZigchoProfileMedalsTest|FullyQualifiedName~ZigchoProfileResponseTest|FullyQualifiedName~ZigchoStaticRouteResponseTest|FullyQualifiedName~TestShowRefreshesSearch|FullyQualifiedName~TestSingleRatingBucket|FullyQualifiedName~TestZigchoMedalsRender|FullyQualifiedName~ZigchoLeaderboardAvailabilityTest|FullyQualifiedName~ZigchoLeaderboardModsTest|FullyQualifiedName~ZigchoRealtimeServicePolicyTest|FullyQualifiedName~ZigchoScoreResponseTest
 
 jobs:
@@ -34,10 +34,10 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: apply and test the client changes
         run: |
@@ -83,10 +83,10 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: install python
         uses: actions/setup-python@v6
@@ -122,10 +122,10 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: build and verify the portable client
         shell: bash
@@ -170,10 +170,10 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: build and verify the portable client
         run: |
@@ -217,16 +217,16 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install java 17
+      - name: install java 21
         uses: actions/setup-java@v5
         with:
           distribution: microsoft
-          java-version: "17"
+          java-version: "21"
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: install python
         uses: actions/setup-python@v6
@@ -247,15 +247,15 @@ jobs:
           ./apply-endpoints.ps1 -Checkout work/osu-client
           $Version = (Get-Content -Raw client-version.txt).Trim()
           dotnet publish work/osu-client/osu.Android/osu.Android.csproj `
-            -c Release -f net8.0-android -r android-arm64 `
+            -c Release -f net10.0-android -r android-arm64 `
             "-p:Version=$Version" "-p:ApplicationDisplayVersion=$Version" `
             "-p:ApplicationVersion=$env:GITHUB_RUN_NUMBER" `
             -p:AndroidPackageFormats=apk -p:AndroidKeyStore=false `
             -p:DebugType=None -p:DebugSymbols=false
           if ($LASTEXITCODE -ne 0) { throw "Android publish failed" }
-          $Apk = Get-ChildItem work/osu-client/osu.Android/bin/Release/net8.0-android -Recurse -File -Filter *-Signed.apk | Sort-Object Length -Descending | Select-Object -First 1
+          $Apk = Get-ChildItem work/osu-client/osu.Android/bin/Release/net10.0-android -Recurse -File -Filter *-Signed.apk | Sort-Object Length -Descending | Select-Object -First 1
           if (-not $Apk) {
-            $Apk = Get-ChildItem work/osu-client/osu.Android/bin/Release/net8.0-android -Recurse -File -Filter *.apk | Sort-Object Length -Descending | Select-Object -First 1
+            $Apk = Get-ChildItem work/osu-client/osu.Android/bin/Release/net10.0-android -Recurse -File -Filter *.apk | Sort-Object Length -Descending | Select-Object -First 1
           }
           if (-not $Apk) { throw "Android APK missing" }
           python package-mobile.py android-arm64 `
@@ -274,7 +274,7 @@ jobs:
   ios-arm64:
     name: ios arm64 unsigned
     needs: client-tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     steps:
       - name: check out the client source
@@ -288,10 +288,10 @@ jobs:
           path: work/osu-client
           persist-credentials: false
 
-      - name: install dotnet 8
+      - name: install dotnet 10
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: pin the upstream .NET SDK
         run: cp work/osu-client/global.json global.json
@@ -300,7 +300,7 @@ jobs:
         run: dotnet workload install ios
 
       - name: use the Xcode version pinned by upstream osu
-        run: sudo xcode-select -switch /Applications/Xcode_16.4.app
+        run: sudo xcode-select -switch /Applications/Xcode_26.6.app
 
       - name: build and verify the unsigned IPA
         shell: bash
@@ -309,13 +309,13 @@ jobs:
           ./apply-endpoints.sh work/osu-client
           version=$(tr -d '\r\n' < client-version.txt)
           dotnet publish work/osu-client/osu.iOS/osu.iOS.csproj \
-            -c Release -f net8.0-ios -r ios-arm64 \
+            -c Release -f net10.0-ios -r ios-arm64 \
             -p:Version="$version" -p:ApplicationDisplayVersion="$version" \
             -p:ApplicationVersion="$GITHUB_RUN_NUMBER" \
             -p:EnableCodeSigning=false -p:EnableDefaultCodesignEntitlements=false \
             -p:CodesignRequireProvisioningProfile=false -p:ArchiveOnBuild=false \
             -p:DebugType=None -p:DebugSymbols=false
-          app=$(find work/osu-client/osu.iOS/bin/Release/net8.0-ios/ios-arm64 -type d -name '*.app' -print -quit)
+          app=$(find work/osu-client/osu.iOS/bin/Release/net10.0-ios/ios-arm64 -type d -name '*.app' -print -quit)
           test -n "$app"
           python3 package-mobile.py ios-arm64 \
             --input "$app" --output-dir artifacts/lazer --version "$version" \

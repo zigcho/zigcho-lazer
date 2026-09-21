@@ -6,7 +6,7 @@ checkout=${ZIGCHO_LAZER_CHECKOUT:-$script_dir/work/osu-client}
 if [ -n "${ZIGCHO_LAZER_DEBUG_APP:-}" ]; then
     executable="$ZIGCHO_LAZER_DEBUG_APP/Contents/MacOS/osu!"
 else
-    executable="$checkout/osu.Desktop/bin/Debug/net8.0/osx-arm64/publish/osu!"
+    executable="$checkout/osu.Desktop/bin/Debug/net10.0/osx-arm64/publish/osu!"
 fi
 development_config="$checkout/osu.Game/Online/DevelopmentEndpointConfiguration.cs"
 

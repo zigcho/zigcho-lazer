@@ -1,12 +1,12 @@
 diff --git a/osu.Android/AndroidManifest.xml b/osu.Android/AndroidManifest.xml
-index d334888a5f..3ed32f7f33 100644
+index 6096a5e..bbc525a 100644
 --- a/osu.Android/AndroidManifest.xml
 +++ b/osu.Android/AndroidManifest.xml
 @@ -1,13 +1,13 @@
  ﻿<?xml version="1.0" encoding="utf-8"?>
 -<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="sh.ppy.osulazer" android:installLocation="auto">
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="ovh.kai.zigcholazer" android:installLocation="auto">
- 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
+ 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="36" />
  	<application android:allowBackup="true"
  				 android:supportsRtl="true"
 -				 android:label="osu!"
@@ -20,7 +20,7 @@ index d334888a5f..3ed32f7f33 100644
                    android:exported="false">
              <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
 diff --git a/osu.Desktop/DiscordRichPresence.cs b/osu.Desktop/DiscordRichPresence.cs
-index c24cc2132b..a4c15f1f2d 100644
+index c24cc21..a4c15f1 100644
 --- a/osu.Desktop/DiscordRichPresence.cs
 +++ b/osu.Desktop/DiscordRichPresence.cs
 @@ -197,7 +197,7 @@ private void updatePresence(bool hideIdentifiableInformation)
@@ -33,7 +33,7 @@ index c24cc2132b..a4c15f1f2d 100644
                      // to make party display sensible, assign a powers of two above participants count (8 at minimum).
                      Max = (int)Math.Max(8, Math.Pow(2, Math.Ceiling(Math.Log2(room.Users.Count)))),
 diff --git a/osu.Desktop/Program.cs b/osu.Desktop/Program.cs
-index 354f62adea..292f3337bf 100644
+index 354f62a..292f333 100644
 --- a/osu.Desktop/Program.cs
 +++ b/osu.Desktop/Program.cs
 @@ -21,9 +21,9 @@ namespace osu.Desktop
@@ -58,7 +58,7 @@ index 354f62adea..292f3337bf 100644
              // This has bitten us in the rear before (bricked updater), and although the underlying issue from
              // last time has been fixed, let's not tempt fate.
 diff --git a/osu.Desktop/osu.Desktop.csproj b/osu.Desktop/osu.Desktop.csproj
-index acc9364055..49fbe91435 100644
+index 28efaeb..8e662d7 100644
 --- a/osu.Desktop/osu.Desktop.csproj
 +++ b/osu.Desktop/osu.Desktop.csproj
 @@ -5,9 +5,9 @@
@@ -75,7 +75,7 @@ index acc9364055..49fbe91435 100644
      <Version>0.0.0</Version>
      <FileVersion>0.0.0</FileVersion>
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs b/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs
-index 4e1bcc58a2..e24d746f9a 100644
+index 4e1bcc5..e24d746 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs
 @@ -14,7 +14,7 @@ public abstract class ManiaKeyMod : Mod, IApplicableToBeatmapConverter
@@ -88,7 +88,7 @@ index 4e1bcc58a2..e24d746f9a 100644
          public void ApplyToBeatmapConverter(IBeatmapConverter beatmapConverter)
          {
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModHardRock.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModHardRock.cs
-index 93875e5fae..431095a9c6 100644
+index 93875e5..431095a 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModHardRock.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModHardRock.cs
 @@ -10,7 +10,7 @@ namespace osu.Game.Rulesets.Mania.Mods
@@ -101,7 +101,7 @@ index 93875e5fae..431095a9c6 100644
          public const double HIT_WINDOW_DIFFICULTY_MULTIPLIER = 1.4;
  
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModKey1.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModKey1.cs
-index 290e40fbf3..4312728b21 100644
+index 290e40f..4312728 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModKey1.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModKey1.cs
 @@ -14,6 +14,6 @@ public class ManiaModKey1 : ManiaKeyMod
@@ -113,7 +113,7 @@ index 290e40fbf3..4312728b21 100644
      }
  }
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModKey10.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModKey10.cs
-index 18687148df..4901f8f314 100644
+index 1868714..4901f8f 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModKey10.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModKey10.cs
 @@ -14,6 +14,6 @@ public class ManiaModKey10 : ManiaKeyMod
@@ -125,7 +125,7 @@ index 18687148df..4901f8f314 100644
      }
  }
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModKey2.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModKey2.cs
-index 041d38b98a..54ee50dd60 100644
+index 041d38b..54ee50d 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModKey2.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModKey2.cs
 @@ -14,6 +14,6 @@ public class ManiaModKey2 : ManiaKeyMod
@@ -137,7 +137,7 @@ index 041d38b98a..54ee50dd60 100644
      }
  }
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModKey3.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModKey3.cs
-index fea5366811..180e123cdf 100644
+index fea5366..180e123 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModKey3.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModKey3.cs
 @@ -14,6 +14,6 @@ public class ManiaModKey3 : ManiaKeyMod
@@ -149,7 +149,7 @@ index fea5366811..180e123cdf 100644
      }
  }
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaModMirror.cs b/osu.Game.Rulesets.Mania/Mods/ManiaModMirror.cs
-index cc7e270dda..cc62b4a039 100644
+index cc7e270..cc62b4a 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaModMirror.cs
 +++ b/osu.Game.Rulesets.Mania/Mods/ManiaModMirror.cs
 @@ -14,7 +14,7 @@ namespace osu.Game.Rulesets.Mania.Mods
@@ -162,7 +162,7 @@ index cc7e270dda..cc62b4a039 100644
          public void ApplyToBeatmap(IBeatmap beatmap)
          {
 diff --git a/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs b/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs
-index 76c862d700..6cecbd4b4d 100644
+index 76c862d..6cecbd4 100644
 --- a/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs
 +++ b/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs
 @@ -21,7 +21,7 @@ public class OsuModSpunOut : Mod, IApplicableToDrawableHitObject
@@ -175,7 +175,7 @@ index 76c862d700..6cecbd4b4d 100644
          public void ApplyToDrawableHitObject(DrawableHitObject hitObject)
          {
 diff --git a/osu.Game.Rulesets.Osu/Mods/OsuModTouchDevice.cs b/osu.Game.Rulesets.Osu/Mods/OsuModTouchDevice.cs
-index a364190a00..86ebac39f5 100644
+index a364190..86ebac3 100644
 --- a/osu.Game.Rulesets.Osu/Mods/OsuModTouchDevice.cs
 +++ b/osu.Game.Rulesets.Osu/Mods/OsuModTouchDevice.cs
 @@ -10,6 +10,6 @@ namespace osu.Game.Rulesets.Osu.Mods
@@ -188,7 +188,7 @@ index a364190a00..86ebac39f5 100644
  }
 diff --git a/osu.Game.Tests/PollingChatClientTest.cs b/osu.Game.Tests/PollingChatClientTest.cs
 new file mode 100644
-index 0000000000..99b2466cb9
+index 0000000..99b2466
 --- /dev/null
 +++ b/osu.Game.Tests/PollingChatClientTest.cs
 @@ -0,0 +1,35 @@
@@ -229,7 +229,7 @@ index 0000000000..99b2466cb9
 +}
 diff --git a/osu.Game.Tests/TrustedDomainOnlineStoreTest.cs b/osu.Game.Tests/TrustedDomainOnlineStoreTest.cs
 new file mode 100644
-index 0000000000..e633a61c99
+index 0000000..e633a61
 --- /dev/null
 +++ b/osu.Game.Tests/TrustedDomainOnlineStoreTest.cs
 @@ -0,0 +1,25 @@
@@ -259,7 +259,7 @@ index 0000000000..e633a61c99
 +    }
 +}
 diff --git a/osu.Game.Tests/Visual/Matchmaking/TestSceneRatingDistributionGraph.cs b/osu.Game.Tests/Visual/Matchmaking/TestSceneRatingDistributionGraph.cs
-index 6f4d9aa9b7..f99ed0e536 100644
+index 6f4d9aa..f99ed0e 100644
 --- a/osu.Game.Tests/Visual/Matchmaking/TestSceneRatingDistributionGraph.cs
 +++ b/osu.Game.Tests/Visual/Matchmaking/TestSceneRatingDistributionGraph.cs
 @@ -61,6 +61,13 @@ public void TestNoData()
@@ -277,7 +277,7 @@ index 6f4d9aa9b7..f99ed0e536 100644
          public void TestOutOfBoundsUserRating()
          {
 diff --git a/osu.Game.Tests/Visual/Online/TestSceneBeatmapListingOverlay.cs b/osu.Game.Tests/Visual/Online/TestSceneBeatmapListingOverlay.cs
-index 8691f46605..9cad4d0c71 100644
+index 8691f46..9cad4d0 100644
 --- a/osu.Game.Tests/Visual/Online/TestSceneBeatmapListingOverlay.cs
 +++ b/osu.Game.Tests/Visual/Online/TestSceneBeatmapListingOverlay.cs
 @@ -37,6 +37,8 @@ public partial class TestSceneBeatmapListingOverlay : OsuManualInputManagerTestS
@@ -329,7 +329,7 @@ index 8691f46605..9cad4d0c71 100644
          public void TestFeaturedArtistFilter()
          {
 diff --git a/osu.Game.Tests/Visual/Online/TestSceneUserProfileOverlay.cs b/osu.Game.Tests/Visual/Online/TestSceneUserProfileOverlay.cs
-index 8367dabbb9..7937ab4e73 100644
+index 8367dab..7937ab4 100644
 --- a/osu.Game.Tests/Visual/Online/TestSceneUserProfileOverlay.cs
 +++ b/osu.Game.Tests/Visual/Online/TestSceneUserProfileOverlay.cs
 @@ -9,11 +9,13 @@
@@ -409,7 +409,7 @@ index 8367dabbb9..7937ab4e73 100644
          {
 diff --git a/osu.Game.Tests/ZigchoLeaderboardAvailabilityTest.cs b/osu.Game.Tests/ZigchoLeaderboardAvailabilityTest.cs
 new file mode 100644
-index 0000000000..638d4632bf
+index 0000000..638d463
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoLeaderboardAvailabilityTest.cs
 @@ -0,0 +1,50 @@
@@ -465,7 +465,7 @@ index 0000000000..638d4632bf
 +}
 diff --git a/osu.Game.Tests/ZigchoLeaderboardModsTest.cs b/osu.Game.Tests/ZigchoLeaderboardModsTest.cs
 new file mode 100644
-index 0000000000..bb77d7c361
+index 0000000..bb77d7c
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoLeaderboardModsTest.cs
 @@ -0,0 +1,43 @@
@@ -514,7 +514,7 @@ index 0000000000..bb77d7c361
 +}
 diff --git a/osu.Game.Tests/ZigchoPlaylistRoomResponseTest.cs b/osu.Game.Tests/ZigchoPlaylistRoomResponseTest.cs
 new file mode 100644
-index 0000000000..037117295e
+index 0000000..0371172
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoPlaylistRoomResponseTest.cs
 @@ -0,0 +1,60 @@
@@ -580,7 +580,7 @@ index 0000000000..037117295e
 +}
 diff --git a/osu.Game.Tests/ZigchoPollingPresenceTest.cs b/osu.Game.Tests/ZigchoPollingPresenceTest.cs
 new file mode 100644
-index 0000000000..ac77a687f8
+index 0000000..ac77a68
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoPollingPresenceTest.cs
 @@ -0,0 +1,79 @@
@@ -665,7 +665,7 @@ index 0000000000..ac77a687f8
 +}
 diff --git a/osu.Game.Tests/ZigchoProfileMedalsTest.cs b/osu.Game.Tests/ZigchoProfileMedalsTest.cs
 new file mode 100644
-index 0000000000..794ae7eef1
+index 0000000..794ae7e
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoProfileMedalsTest.cs
 @@ -0,0 +1,48 @@
@@ -719,7 +719,7 @@ index 0000000000..794ae7eef1
 +}
 diff --git a/osu.Game.Tests/ZigchoProfileResponseTest.cs b/osu.Game.Tests/ZigchoProfileResponseTest.cs
 new file mode 100644
-index 0000000000..bc77d49cab
+index 0000000..bc77d49
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoProfileResponseTest.cs
 @@ -0,0 +1,74 @@
@@ -799,7 +799,7 @@ index 0000000000..bc77d49cab
 +}
 diff --git a/osu.Game.Tests/ZigchoRealtimeServicePolicyTest.cs b/osu.Game.Tests/ZigchoRealtimeServicePolicyTest.cs
 new file mode 100644
-index 0000000000..b50115c57a
+index 0000000..c1bf7bd
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoRealtimeServicePolicyTest.cs
 @@ -0,0 +1,79 @@
@@ -884,7 +884,7 @@ index 0000000000..b50115c57a
 +}
 diff --git a/osu.Game.Tests/ZigchoScoreResponseTest.cs b/osu.Game.Tests/ZigchoScoreResponseTest.cs
 new file mode 100644
-index 0000000000..f5d6d3b1ed
+index 0000000..f5d6d3b
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoScoreResponseTest.cs
 @@ -0,0 +1,58 @@
@@ -948,7 +948,7 @@ index 0000000000..f5d6d3b1ed
 +}
 diff --git a/osu.Game.Tests/ZigchoStaticRouteResponseTest.cs b/osu.Game.Tests/ZigchoStaticRouteResponseTest.cs
 new file mode 100644
-index 0000000000..5ef7f9eb04
+index 0000000..5ef7f9e
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoStaticRouteResponseTest.cs
 @@ -0,0 +1,97 @@
@@ -1050,7 +1050,7 @@ index 0000000000..5ef7f9eb04
 +    }
 +}
 diff --git a/osu.Game/Beatmaps/APIBeatmapMetadataSource.cs b/osu.Game/Beatmaps/APIBeatmapMetadataSource.cs
-index e15de7ec02..3badbb6d7b 100644
+index e15de7e..3badbb6 100644
 --- a/osu.Game/Beatmaps/APIBeatmapMetadataSource.cs
 +++ b/osu.Game/Beatmaps/APIBeatmapMetadataSource.cs
 @@ -33,7 +33,7 @@ public bool TryLookup(BeatmapInfo beatmapInfo, out OnlineBeatmapMetadata? online
@@ -1063,7 +1063,7 @@ index e15de7ec02..3badbb6d7b 100644
              try
              {
 diff --git a/osu.Game/Online/API/APIAccess.cs b/osu.Game/Online/API/APIAccess.cs
-index c099474341..75ae064011 100644
+index c099474..75ae064 100644
 --- a/osu.Game/Online/API/APIAccess.cs
 +++ b/osu.Game/Online/API/APIAccess.cs
 @@ -93,7 +93,9 @@ public APIAccess(OsuGameBase game, OsuConfigManager config, EndpointConfiguratio
@@ -1099,13 +1099,13 @@ index c099474341..75ae064011 100644
  
              localUserState.ClearLocalUser();
 diff --git a/osu.Game/Online/API/OAuth.cs b/osu.Game/Online/API/OAuth.cs
-index 772c1c2f45..5422d9610d 100644
+index e30dd3c..aa456f9 100644
 --- a/osu.Game/Online/API/OAuth.cs
 +++ b/osu.Game/Online/API/OAuth.cs
-@@ -7,8 +7,10 @@
- using System.Diagnostics;
+@@ -8,8 +8,10 @@
  using System.Net.Http;
  using System.Net.Sockets;
+ using System.Threading;
 +using System.Threading.Tasks;
  using Newtonsoft.Json;
  using osu.Framework.Bindables;
@@ -1113,7 +1113,7 @@ index 772c1c2f45..5422d9610d 100644
  
  namespace osu.Game.Online.API
  {
-@@ -156,6 +158,51 @@ internal void Clear()
+@@ -157,6 +159,51 @@ internal void Clear()
                  Token.Value = null;
          }
  
@@ -1166,7 +1166,7 @@ index 772c1c2f45..5422d9610d 100644
          {
              internal readonly string RefreshToken;
 diff --git a/osu.Game/Online/API/Requests/Responses/APINewsPost.cs b/osu.Game/Online/API/Requests/Responses/APINewsPost.cs
-index ff12a83af2..e79b1f6c08 100644
+index ff12a83..e79b1f6 100644
 --- a/osu.Game/Online/API/Requests/Responses/APINewsPost.cs
 +++ b/osu.Game/Online/API/Requests/Responses/APINewsPost.cs
 @@ -38,6 +38,8 @@ public string Author
@@ -1179,7 +1179,7 @@ index ff12a83af2..e79b1f6c08 100644
  
          [JsonProperty("title")]
 diff --git a/osu.Game/Online/API/Requests/Responses/APIUserAchievement.cs b/osu.Game/Online/API/Requests/Responses/APIUserAchievement.cs
-index 836a5bc485..39b0d3acb4 100644
+index 836a5bc..39b0d3a 100644
 --- a/osu.Game/Online/API/Requests/Responses/APIUserAchievement.cs
 +++ b/osu.Game/Online/API/Requests/Responses/APIUserAchievement.cs
 @@ -3,6 +3,7 @@
@@ -1228,7 +1228,7 @@ index 836a5bc485..39b0d3acb4 100644
  }
 diff --git a/osu.Game/Online/API/ZigchoRealtimeServicePolicy.cs b/osu.Game/Online/API/ZigchoRealtimeServicePolicy.cs
 new file mode 100644
-index 0000000000..1f9c4387fc
+index 0000000..1f9c438
 --- /dev/null
 +++ b/osu.Game/Online/API/ZigchoRealtimeServicePolicy.cs
 @@ -0,0 +1,17 @@
@@ -1250,7 +1250,7 @@ index 0000000000..1f9c4387fc
 +    }
 +}
 diff --git a/osu.Game/Online/Chat/ChannelManager.cs b/osu.Game/Online/Chat/ChannelManager.cs
-index 031c4fbec7..cb4375659d 100644
+index 2d58144..64bd402 100644
 --- a/osu.Game/Online/Chat/ChannelManager.cs
 +++ b/osu.Game/Online/Chat/ChannelManager.cs
 @@ -43,6 +43,7 @@ public partial class ChannelManager : CompositeComponent, IChannelPostTarget
@@ -1286,7 +1286,7 @@ index 031c4fbec7..cb4375659d 100644
                      createNewPrivateMessageRequest.Failure += exception =>
                      {
                          handlePostException(exception);
-@@ -437,7 +447,40 @@ private void addMessages(List<Message> messages)
+@@ -448,7 +458,40 @@ private void addMessages(List<Message> messages)
              var blockedUserIds = localUserBlocks.Select(b => b.TargetID).ToList();
  
              foreach (var group in messages.Where(m => !blockedUserIds.Contains(m.SenderId)).GroupBy(m => m.ChannelId))
@@ -1328,7 +1328,7 @@ index 031c4fbec7..cb4375659d 100644
  
              lastSilenceMessageId ??= messages.LastOrDefault()?.Id;
          }
-@@ -463,6 +506,13 @@ private void initializeChannels()
+@@ -474,6 +517,13 @@ private void initializeChannels()
                      if (joinDefaults && defaultChannels.Any(c => c.Equals(channel.Name, StringComparison.OrdinalIgnoreCase)))
                          joinChannel(ch);
                  }
@@ -1344,7 +1344,7 @@ index 031c4fbec7..cb4375659d 100644
              req.Failure += error =>
 diff --git a/osu.Game/Online/Chat/PollingChatClient.cs b/osu.Game/Online/Chat/PollingChatClient.cs
 new file mode 100644
-index 0000000000..2fc96e1826
+index 0000000..2fc96e1
 --- /dev/null
 +++ b/osu.Game/Online/Chat/PollingChatClient.cs
 @@ -0,0 +1,153 @@
@@ -1502,7 +1502,7 @@ index 0000000000..2fc96e1826
 +    }
 +}
 diff --git a/osu.Game/Online/DevelopmentEndpointConfiguration.cs b/osu.Game/Online/DevelopmentEndpointConfiguration.cs
-index e36e36ee9f..a1ceff71d5 100644
+index e36e36e..a1ceff7 100644
 --- a/osu.Game/Online/DevelopmentEndpointConfiguration.cs
 +++ b/osu.Game/Online/DevelopmentEndpointConfiguration.cs
 @@ -1,5 +1,5 @@
@@ -1538,7 +1538,7 @@ index e36e36ee9f..a1ceff71d5 100644
      }
  }
 diff --git a/osu.Game/Online/EndpointConfiguration.cs b/osu.Game/Online/EndpointConfiguration.cs
-index 2ce14320ec..df9ce31e20 100644
+index 2ce1432..df9ce31 100644
 --- a/osu.Game/Online/EndpointConfiguration.cs
 +++ b/osu.Game/Online/EndpointConfiguration.cs
 @@ -8,6 +8,21 @@ namespace osu.Game.Online
@@ -1564,7 +1564,7 @@ index 2ce14320ec..df9ce31e20 100644
          /// The OAuth client secret.
          /// </summary>
 diff --git a/osu.Game/Online/Leaderboards/LeaderboardManager.cs b/osu.Game/Online/Leaderboards/LeaderboardManager.cs
-index d4a258a307..dd424888bd 100644
+index d4a258a..dd42488 100644
 --- a/osu.Game/Online/Leaderboards/LeaderboardManager.cs
 +++ b/osu.Game/Online/Leaderboards/LeaderboardManager.cs
 @@ -46,6 +46,14 @@ public partial class LeaderboardManager : Component
@@ -1667,7 +1667,7 @@ index d4a258a307..dd424888bd 100644
              Debug.Assert(CurrentCriteria != null);
 diff --git a/osu.Game/Online/Leaderboards/ZigchoLeaderboardAvailability.cs b/osu.Game/Online/Leaderboards/ZigchoLeaderboardAvailability.cs
 new file mode 100644
-index 0000000000..1cc0400594
+index 0000000..1cc0400
 --- /dev/null
 +++ b/osu.Game/Online/Leaderboards/ZigchoLeaderboardAvailability.cs
 @@ -0,0 +1,14 @@
@@ -1687,7 +1687,7 @@ index 0000000000..1cc0400594
 +}
 diff --git a/osu.Game/Online/Leaderboards/ZigchoLeaderboardMods.cs b/osu.Game/Online/Leaderboards/ZigchoLeaderboardMods.cs
 new file mode 100644
-index 0000000000..d0839ad4f7
+index 0000000..d0839ad
 --- /dev/null
 +++ b/osu.Game/Online/Leaderboards/ZigchoLeaderboardMods.cs
 @@ -0,0 +1,29 @@
@@ -1721,7 +1721,7 @@ index 0000000000..d0839ad4f7
 +    }
 +}
 diff --git a/osu.Game/Online/Metadata/OnlineMetadataClient.cs b/osu.Game/Online/Metadata/OnlineMetadataClient.cs
-index 6e4f7e4d6d..66d3841497 100644
+index 6e4f7e4..66d3841 100644
 --- a/osu.Game/Online/Metadata/OnlineMetadataClient.cs
 +++ b/osu.Game/Online/Metadata/OnlineMetadataClient.cs
 @@ -2,12 +2,18 @@
@@ -2154,8 +2154,54 @@ index 6e4f7e4d6d..66d3841497 100644
 +        }
      }
  }
+diff --git a/osu.Game/Online/Multiplayer/MultiplayerClient.cs b/osu.Game/Online/Multiplayer/MultiplayerClient.cs
+index 7f2cb69..931369d 100644
+--- a/osu.Game/Online/Multiplayer/MultiplayerClient.cs
++++ b/osu.Game/Online/Multiplayer/MultiplayerClient.cs
+@@ -1251,7 +1251,11 @@ Task IStatefulUserHubClient.DisconnectRequested()
+ 
+         Task IStatefulUserHubClient.ServerShuttingDown()
+         {
+-            this.ReconnectWhenReady(IsConnected, () => room == null, Reconnect);
++            Schedule(() =>
++            {
++                Func<Task>? leaveRoom = room == null ? null : LeaveRoom;
++                MultiplayerClientExtensions.LeaveRoomAndReconnect(leaveRoom, Reconnect).FireAndForget();
++            });
+             return Task.CompletedTask;
+         }
+ 
+diff --git a/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs b/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
+index 71dd527..1be24a4 100644
+--- a/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
++++ b/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
+@@ -82,6 +82,24 @@ public static void ReconnectWhenReady(this IStatefulUserHubClient client, IBinda
+             }).FireAndForget();
+         }
+ 
++        /// <summary>
++        /// Immediately leaves any local room state before reconnecting after a
++        /// server shutdown. Reconnection still runs if the leave request loses
++        /// the race with the closing server.
++        /// </summary>
++        public static async Task LeaveRoomAndReconnect(Func<Task>? leaveRoomFunction, Func<Task> reconnectFunction)
++        {
++            try
++            {
++                if (leaveRoomFunction != null)
++                    await leaveRoomFunction().ConfigureAwait(false);
++            }
++            finally
++            {
++                await reconnectFunction().ConfigureAwait(false);
++            }
++        }
++
+         public static string? GetHubExceptionMessage(this Exception exception)
+         {
+             if (exception is HubException hubException)
 diff --git a/osu.Game/Online/OnlineStatusNotifier.cs b/osu.Game/Online/OnlineStatusNotifier.cs
-index f4c33c67aa..09c44894ea 100644
+index f4c33c6..09c4489 100644
 --- a/osu.Game/Online/OnlineStatusNotifier.cs
 +++ b/osu.Game/Online/OnlineStatusNotifier.cs
 @@ -112,7 +112,6 @@ protected override void LoadComplete()
@@ -2167,7 +2213,7 @@ index f4c33c67aa..09c44894ea 100644
                          break;
                  }
 diff --git a/osu.Game/Online/ProductionEndpointConfiguration.cs b/osu.Game/Online/ProductionEndpointConfiguration.cs
-index 37ce2b64e1..8f9455211a 100644
+index 37ce2b6..8f94552 100644
 --- a/osu.Game/Online/ProductionEndpointConfiguration.cs
 +++ b/osu.Game/Online/ProductionEndpointConfiguration.cs
 @@ -1,5 +1,5 @@
@@ -2202,7 +2248,7 @@ index 37ce2b64e1..8f9455211a 100644
      }
  }
 diff --git a/osu.Game/Online/Rooms/MultiplayerScore.cs b/osu.Game/Online/Rooms/MultiplayerScore.cs
-index 74eaea8dbc..7202160ea4 100644
+index 74eaea8..7202160 100644
 --- a/osu.Game/Online/Rooms/MultiplayerScore.cs
 +++ b/osu.Game/Online/Rooms/MultiplayerScore.cs
 @@ -12,6 +12,7 @@
@@ -2224,7 +2270,7 @@ index 74eaea8dbc..7202160ea4 100644
          public double? PP { get; set; }
  
 diff --git a/osu.Game/Online/Rooms/SubmitRoomScoreRequest.cs b/osu.Game/Online/Rooms/SubmitRoomScoreRequest.cs
-index 3f404386c3..c7d0259a42 100644
+index 3f40438..c7d0259 100644
 --- a/osu.Game/Online/Rooms/SubmitRoomScoreRequest.cs
 +++ b/osu.Game/Online/Rooms/SubmitRoomScoreRequest.cs
 @@ -1,6 +1,7 @@
@@ -2247,7 +2293,7 @@ index 3f404386c3..c7d0259a42 100644
              this.roomId = roomId;
              this.playlistItemId = playlistItemId;
 diff --git a/osu.Game/Online/Rooms/SubmitScoreRequest.cs b/osu.Game/Online/Rooms/SubmitScoreRequest.cs
-index b4a91a5892..5b881d2cb3 100644
+index b4a91a5..5b881d2 100644
 --- a/osu.Game/Online/Rooms/SubmitScoreRequest.cs
 +++ b/osu.Game/Online/Rooms/SubmitScoreRequest.cs
 @@ -1,12 +1,17 @@
@@ -2306,7 +2352,7 @@ index b4a91a5892..5b881d2cb3 100644
              return req;
          }
 diff --git a/osu.Game/Online/Solo/SubmitSoloScoreRequest.cs b/osu.Game/Online/Solo/SubmitSoloScoreRequest.cs
-index 3260ba8e7c..2aa76e2051 100644
+index 3260ba8..2aa76e2 100644
 --- a/osu.Game/Online/Solo/SubmitSoloScoreRequest.cs
 +++ b/osu.Game/Online/Solo/SubmitSoloScoreRequest.cs
 @@ -1,6 +1,7 @@
@@ -2329,7 +2375,7 @@ index 3260ba8e7c..2aa76e2051 100644
              this.beatmapId = beatmapId;
          }
 diff --git a/osu.Game/Online/TrustedDomainOnlineStore.cs b/osu.Game/Online/TrustedDomainOnlineStore.cs
-index 2b47f159e6..3e92f114a9 100644
+index 2b47f15..3e92f11 100644
 --- a/osu.Game/Online/TrustedDomainOnlineStore.cs
 +++ b/osu.Game/Online/TrustedDomainOnlineStore.cs
 @@ -1,5 +1,5 @@
@@ -2363,8 +2409,46 @@ index 2b47f159e6..3e92f114a9 100644
 +            || host.EndsWith($".{domain}", StringComparison.OrdinalIgnoreCase);
      }
  }
+diff --git a/osu.Game/Online/UserStatisticsWatcher.cs b/osu.Game/Online/UserStatisticsWatcher.cs
+index 73ca3c9..5a92bdb 100644
+--- a/osu.Game/Online/UserStatisticsWatcher.cs
++++ b/osu.Game/Online/UserStatisticsWatcher.cs
+@@ -61,6 +61,33 @@ public void RegisterForStatisticsUpdateAfter(ScoreInfo score)
+             });
+         }
+ 
++        /// <summary>
++        /// Publishes the statistics update for a score which has already been fully processed by the API.
++        /// </summary>
++        /// <remarks>
++        /// Zigcho commits score statistics before returning the submission response. Refetching here avoids
++        /// losing a synchronous <c>UserScoreProcessed</c> event before the returned online score ID is registered.
++        /// </remarks>
++        public void RegisterForStatisticsUpdateAfterProcessedScore(ScoreInfo score)
++        {
++            Schedule(() =>
++            {
++                if (!api.IsLoggedIn)
++                    return;
++
++                if (!score.Ruleset.IsLegacyRuleset() || score.OnlineID <= 0)
++                    return;
++
++                var cachedStatistics = statisticsProvider.GetStatisticsFor(score.Ruleset);
++
++                statisticsProvider.RefetchStatistics(score.Ruleset, u => Schedule(() =>
++                {
++                    var before = u.OldStatistics ?? cachedStatistics ?? u.NewStatistics;
++                    latestUpdate.Value = new ScoreBasedUserStatisticsUpdate(score, before, u.NewStatistics);
++                }));
++            });
++        }
++
+         private void userScoreProcessed(int userId, long scoreId)
+         {
+             if (userId != api.LocalUser.Value?.OnlineID)
 diff --git a/osu.Game/OsuGame.cs b/osu.Game/OsuGame.cs
-index 492567da32..3504f5dfc5 100644
+index 5b26173..ac63fd5 100644
 --- a/osu.Game/OsuGame.cs
 +++ b/osu.Game/OsuGame.cs
 @@ -97,9 +97,9 @@ public partial class OsuGame : OsuGameBase, IKeyBindingHandler<GlobalAction>, IL
@@ -2379,7 +2463,7 @@ index 492567da32..3504f5dfc5 100644
  #endif
  
          /// <summary>
-@@ -1247,7 +1247,7 @@ protected override void LoadComplete()
+@@ -1249,7 +1249,7 @@ protected override void LoadComplete()
  
              loadComponentSingleFile(new AccountCreationOverlay(), topMostOverlayContent.Add, true);
              loadComponentSingleFile<IDialogOverlay>(dialogOverlay = new DialogOverlay(), topMostOverlayContent.Add, true);
@@ -2389,7 +2473,7 @@ index 492567da32..3504f5dfc5 100644
              loadComponentSingleFile(new BackgroundDataStoreProcessor(), Add);
              loadComponentSingleFile<BeatmapStore>(detachedBeatmapStore = new RealmDetachedBeatmapStore(), Add, true);
 diff --git a/osu.Game/OsuGameBase.cs b/osu.Game/OsuGameBase.cs
-index cc4fa5b618..3b49c32d3f 100644
+index 5fe20ef..0b05f20 100644
 --- a/osu.Game/OsuGameBase.cs
 +++ b/osu.Game/OsuGameBase.cs
 @@ -78,9 +78,9 @@ namespace osu.Game
@@ -2405,7 +2489,7 @@ index cc4fa5b618..3b49c32d3f 100644
  
          public const string OSU_PROTOCOL = "osu://";
 diff --git a/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs b/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs
-index 37a29b1c50..e9268fdc01 100644
+index 37a29b1..e9268fd 100644
 --- a/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs
 +++ b/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs
 @@ -142,6 +142,8 @@ private void load(OverlayColourProvider colourProvider, IAPIProvider api)
@@ -2418,7 +2502,7 @@ index 37a29b1c50..e9268fdc01 100644
              => Schedule(() => searchControl.Query.Value = query);
  
 diff --git a/osu.Game/Overlays/BeatmapListingOverlay.cs b/osu.Game/Overlays/BeatmapListingOverlay.cs
-index f83368fa41..2765f273da 100644
+index f83368f..2765f27 100644
 --- a/osu.Game/Overlays/BeatmapListingOverlay.cs
 +++ b/osu.Game/Overlays/BeatmapListingOverlay.cs
 @@ -125,6 +125,12 @@ public void ShowWithLanguageFilter(SearchLanguage language)
@@ -2435,7 +2519,7 @@ index f83368fa41..2765f273da 100644
          {
              // temporary until the textbox/header is updated to always stay on screen.
 diff --git a/osu.Game/Overlays/BeatmapSet/Scores/ScoresContainer.cs b/osu.Game/Overlays/BeatmapSet/Scores/ScoresContainer.cs
-index 63729319db..0876fdb529 100644
+index 6372931..0876fdb 100644
 --- a/osu.Game/Overlays/BeatmapSet/Scores/ScoresContainer.cs
 +++ b/osu.Game/Overlays/BeatmapSet/Scores/ScoresContainer.cs
 @@ -13,10 +13,12 @@
@@ -2526,7 +2610,7 @@ index 63729319db..0876fdb529 100644
      }
  }
 diff --git a/osu.Game/Overlays/Dashboard/Home/News/FeaturedNewsItemPanel.cs b/osu.Game/Overlays/Dashboard/Home/News/FeaturedNewsItemPanel.cs
-index 0788a0d231..dd02ac4eed 100644
+index 0788a0d..dd02ac4 100644
 --- a/osu.Game/Overlays/Dashboard/Home/News/FeaturedNewsItemPanel.cs
 +++ b/osu.Game/Overlays/Dashboard/Home/News/FeaturedNewsItemPanel.cs
 @@ -8,7 +8,6 @@
@@ -2556,7 +2640,7 @@ index 0788a0d231..dd02ac4eed 100644
                  HoverColour = Color4.White;
              }
 diff --git a/osu.Game/Overlays/Dashboard/Home/News/NewsTitleLink.cs b/osu.Game/Overlays/Dashboard/Home/News/NewsTitleLink.cs
-index ea1b9ae494..b7e1fb78a4 100644
+index ea1b9ae..b7e1fb7 100644
 --- a/osu.Game/Overlays/Dashboard/Home/News/NewsTitleLink.cs
 +++ b/osu.Game/Overlays/Dashboard/Home/News/NewsTitleLink.cs
 @@ -4,7 +4,6 @@
@@ -2586,7 +2670,7 @@ index ea1b9ae494..b7e1fb78a4 100644
      }
  }
 diff --git a/osu.Game/Overlays/DevBuildBanner.cs b/osu.Game/Overlays/DevBuildBanner.cs
-index f514483e76..68610fa0b4 100644
+index f514483..68610fa 100644
 --- a/osu.Game/Overlays/DevBuildBanner.cs
 +++ b/osu.Game/Overlays/DevBuildBanner.cs
 @@ -32,7 +32,7 @@ private void load(OsuColour colours, TextureStore textures, OsuGameBase game)
@@ -2599,7 +2683,7 @@ index f514483e76..68610fa0b4 100644
                  new Sprite
                  {
 diff --git a/osu.Game/Overlays/MedalOverlay.cs b/osu.Game/Overlays/MedalOverlay.cs
-index 25e22ffbda..ec8cbaaf61 100644
+index 25e22ff..ec8cbaa 100644
 --- a/osu.Game/Overlays/MedalOverlay.cs
 +++ b/osu.Game/Overlays/MedalOverlay.cs
 @@ -74,10 +74,16 @@ private void handleMedalMessages(SocketMessage obj)
@@ -2620,7 +2704,7 @@ index 25e22ffbda..ec8cbaaf61 100644
              };
  
 diff --git a/osu.Game/Overlays/News/NewsCard.cs b/osu.Game/Overlays/News/NewsCard.cs
-index 70e17216e2..767770df91 100644
+index 70e1721..767770d 100644
 --- a/osu.Game/Overlays/News/NewsCard.cs
 +++ b/osu.Game/Overlays/News/NewsCard.cs
 @@ -47,7 +47,7 @@ private void load(OverlayColourProvider colourProvider, OsuGame? game)
@@ -2633,7 +2717,7 @@ index 70e17216e2..767770df91 100644
  
              AddRange(new Drawable[]
 diff --git a/osu.Game/Overlays/Profile/Sections/MedalsSection.cs b/osu.Game/Overlays/Profile/Sections/MedalsSection.cs
-index 42f241d662..233ce795e4 100644
+index 42f241d..233ce79 100644
 --- a/osu.Game/Overlays/Profile/Sections/MedalsSection.cs
 +++ b/osu.Game/Overlays/Profile/Sections/MedalsSection.cs
 @@ -1,8 +1,21 @@
@@ -2797,7 +2881,7 @@ index 42f241d662..233ce795e4 100644
      }
  }
 diff --git a/osu.Game/Overlays/Profile/Sections/Recent/MedalIcon.cs b/osu.Game/Overlays/Profile/Sections/Recent/MedalIcon.cs
-index 6cb439ab33..fdbeab87b9 100644
+index 6cb439a..fdbeab8 100644
 --- a/osu.Game/Overlays/Profile/Sections/Recent/MedalIcon.cs
 +++ b/osu.Game/Overlays/Profile/Sections/Recent/MedalIcon.cs
 @@ -6,6 +6,7 @@
@@ -2818,10 +2902,10 @@ index 6cb439ab33..fdbeab87b9 100644
          public MedalIcon(string slug)
          {
 diff --git a/osu.Game/Overlays/UserProfileOverlay.cs b/osu.Game/Overlays/UserProfileOverlay.cs
-index edaa1bdc89..f51f14413a 100644
+index 79ed5a4..f56c5b6 100644
 --- a/osu.Game/Overlays/UserProfileOverlay.cs
 +++ b/osu.Game/Overlays/UserProfileOverlay.cs
-@@ -117,7 +117,7 @@ private void fetchAndSetContent()
+@@ -116,7 +116,7 @@ private void fetchAndSetContent()
                      //new AboutSection(),
                      new RecentSection(),
                      new RanksSection(),
@@ -2831,7 +2915,7 @@ index edaa1bdc89..f51f14413a 100644
                      new BeatmapsSection(),
                      new KudosuSection()
 diff --git a/osu.Game/Rulesets/Mods/Mod.cs b/osu.Game/Rulesets/Mods/Mod.cs
-index 5572adfc94..df12a77846 100644
+index 5572adf..df12a77 100644
 --- a/osu.Game/Rulesets/Mods/Mod.cs
 +++ b/osu.Game/Rulesets/Mods/Mod.cs
 @@ -114,7 +114,10 @@ protected virtual LocalisableString GetSettingTooltipText(IBindable bindable)
@@ -2847,7 +2931,7 @@ index 5572adfc94..df12a77846 100644
          /// <summary>
          /// The mods this mod cannot be enabled with.
 diff --git a/osu.Game/Rulesets/Mods/ModClassic.cs b/osu.Game/Rulesets/Mods/ModClassic.cs
-index 8c6474f0ac..8b181f2c76 100644
+index 8c6474f..8b181f2 100644
 --- a/osu.Game/Rulesets/Mods/ModClassic.cs
 +++ b/osu.Game/Rulesets/Mods/ModClassic.cs
 @@ -28,7 +28,7 @@ public abstract class ModClassic : Mod
@@ -2860,7 +2944,7 @@ index 8c6474f0ac..8b181f2c76 100644
          public sealed override bool ValidForFreestyleAsRequiredMod => false;
      }
 diff --git a/osu.Game/Rulesets/Mods/ModDaycore.cs b/osu.Game/Rulesets/Mods/ModDaycore.cs
-index 70aeb4087b..b87c8b76c7 100644
+index 70aeb40..b87c8b7 100644
 --- a/osu.Game/Rulesets/Mods/ModDaycore.cs
 +++ b/osu.Game/Rulesets/Mods/ModDaycore.cs
 @@ -18,7 +18,7 @@ public abstract class ModDaycore : ModRateAdjust
@@ -2873,7 +2957,7 @@ index 70aeb4087b..b87c8b76c7 100644
          [SettingSource("Speed decrease", "The actual decrease to apply", SettingControlType = typeof(MultiplierSettingsSlider))]
          public override BindableNumber<double> SpeedChange { get; } = new BindableDouble(0.75)
 diff --git a/osu.Game/Rulesets/Mods/ModDoubleTime.cs b/osu.Game/Rulesets/Mods/ModDoubleTime.cs
-index 794be5c134..709159280c 100644
+index 794be5c..7091592 100644
 --- a/osu.Game/Rulesets/Mods/ModDoubleTime.cs
 +++ b/osu.Game/Rulesets/Mods/ModDoubleTime.cs
 @@ -19,7 +19,7 @@ public abstract class ModDoubleTime : ModRateAdjust
@@ -2886,7 +2970,7 @@ index 794be5c134..709159280c 100644
          [SettingSource("Speed increase", "The actual increase to apply", SettingControlType = typeof(MultiplierSettingsSlider))]
          public override BindableNumber<double> SpeedChange { get; } = new BindableDouble(1.5)
 diff --git a/osu.Game/Rulesets/Mods/ModEasy.cs b/osu.Game/Rulesets/Mods/ModEasy.cs
-index 122caf5dba..4cc4917e98 100644
+index 122caf5..4cc4917 100644
 --- a/osu.Game/Rulesets/Mods/ModEasy.cs
 +++ b/osu.Game/Rulesets/Mods/ModEasy.cs
 @@ -15,7 +15,7 @@ public abstract class ModEasy : Mod, IApplicableToDifficulty
@@ -2899,7 +2983,7 @@ index 122caf5dba..4cc4917e98 100644
  
          protected const float ADJUST_RATIO = 0.5f;
 diff --git a/osu.Game/Rulesets/Mods/ModFlashlight.cs b/osu.Game/Rulesets/Mods/ModFlashlight.cs
-index bebeedbd55..1ed3ddb788 100644
+index bebeedb..1ed3ddb 100644
 --- a/osu.Game/Rulesets/Mods/ModFlashlight.cs
 +++ b/osu.Game/Rulesets/Mods/ModFlashlight.cs
 @@ -35,7 +35,7 @@ public abstract class ModFlashlight : Mod
@@ -2912,7 +2996,7 @@ index bebeedbd55..1ed3ddb788 100644
          [SettingSource("Flashlight size", "Multiplier applied to the default flashlight size.")]
          public abstract BindableFloat SizeMultiplier { get; }
 diff --git a/osu.Game/Rulesets/Mods/ModHalfTime.cs b/osu.Game/Rulesets/Mods/ModHalfTime.cs
-index ae15ea5179..4a40667e41 100644
+index ae15ea5..4a40667 100644
 --- a/osu.Game/Rulesets/Mods/ModHalfTime.cs
 +++ b/osu.Game/Rulesets/Mods/ModHalfTime.cs
 @@ -19,7 +19,7 @@ public abstract class ModHalfTime : ModRateAdjust
@@ -2925,7 +3009,7 @@ index ae15ea5179..4a40667e41 100644
          [SettingSource("Speed decrease", "The actual decrease to apply", SettingControlType = typeof(MultiplierSettingsSlider))]
          public override BindableNumber<double> SpeedChange { get; } = new BindableDouble(0.75)
 diff --git a/osu.Game/Rulesets/Mods/ModHardRock.cs b/osu.Game/Rulesets/Mods/ModHardRock.cs
-index 713bfe0623..a97dacd21f 100644
+index 713bfe0..a97dacd 100644
 --- a/osu.Game/Rulesets/Mods/ModHardRock.cs
 +++ b/osu.Game/Rulesets/Mods/ModHardRock.cs
 @@ -17,7 +17,7 @@ public abstract class ModHardRock : Mod, IApplicableToDifficulty
@@ -2938,7 +3022,7 @@ index 713bfe0623..a97dacd21f 100644
  
          protected const float ADJUST_RATIO = 1.4f;
 diff --git a/osu.Game/Rulesets/Mods/ModHidden.cs b/osu.Game/Rulesets/Mods/ModHidden.cs
-index 2915cb9bea..8bbd58cbab 100644
+index 2915cb9..8bbd58c 100644
 --- a/osu.Game/Rulesets/Mods/ModHidden.cs
 +++ b/osu.Game/Rulesets/Mods/ModHidden.cs
 @@ -14,7 +14,7 @@ public abstract class ModHidden : ModWithVisibilityAdjustment, IApplicableToScor
@@ -2951,7 +3035,7 @@ index 2915cb9bea..8bbd58cbab 100644
          public virtual void ApplyToScoreProcessor(ScoreProcessor scoreProcessor)
          {
 diff --git a/osu.Game/Rulesets/Mods/ModNightcore.cs b/osu.Game/Rulesets/Mods/ModNightcore.cs
-index e1421880ae..06606ad165 100644
+index e142188..06606ad 100644
 --- a/osu.Game/Rulesets/Mods/ModNightcore.cs
 +++ b/osu.Game/Rulesets/Mods/ModNightcore.cs
 @@ -28,7 +28,7 @@ public abstract class ModNightcore : ModRateAdjust
@@ -2964,7 +3048,7 @@ index e1421880ae..06606ad165 100644
          [SettingSource("Speed increase", "The actual increase to apply", SettingControlType = typeof(MultiplierSettingsSlider))]
          public override BindableNumber<double> SpeedChange { get; } = new BindableDouble(1.5)
 diff --git a/osu.Game/Rulesets/Mods/ModNoFail.cs b/osu.Game/Rulesets/Mods/ModNoFail.cs
-index 2a195ad45e..59121aaac7 100644
+index 2a195ad..59121aa 100644
 --- a/osu.Game/Rulesets/Mods/ModNoFail.cs
 +++ b/osu.Game/Rulesets/Mods/ModNoFail.cs
 @@ -19,7 +19,7 @@ public abstract class ModNoFail : Mod, IApplicableFailOverride, IApplicableToHUD
@@ -2977,7 +3061,7 @@ index 2a195ad45e..59121aaac7 100644
  
          private readonly Bindable<bool> showHealthBar = new Bindable<bool>();
 diff --git a/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs b/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs
-index 158b6bc02d..27e993d342 100644
+index 158b6bc..27e993d 100644
 --- a/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs
 +++ b/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs
 @@ -38,8 +38,9 @@ protected override void MutateBeatmap(BeatmapSetInfo beatmapSet, IBeatmap playab
@@ -2992,7 +3076,7 @@ index 158b6bc02d..27e993d342 100644
                  if (allocatedBeatmapIds.Count == 0)
                      throw new InvalidOperationException(@"Ran out of new beatmap IDs to assign to unsubmitted beatmaps!");
 diff --git a/osu.Game/Screens/OnlinePlay/Matchmaking/Queue/RatingDistributionGraph.cs b/osu.Game/Screens/OnlinePlay/Matchmaking/Queue/RatingDistributionGraph.cs
-index 8a03e7b524..f4f2ce92f1 100644
+index 8a03e7b..f4f2ce9 100644
 --- a/osu.Game/Screens/OnlinePlay/Matchmaking/Queue/RatingDistributionGraph.cs
 +++ b/osu.Game/Screens/OnlinePlay/Matchmaking/Queue/RatingDistributionGraph.cs
 @@ -249,6 +249,12 @@ public void SetData((int x, int y)[] data, int? userRating)
@@ -3037,7 +3121,7 @@ index 8a03e7b524..f4f2ce92f1 100644
              }).Append(new Vector2(1, 0)).ToArray();
          });
 diff --git a/osu.Game/Screens/Play/PlayerLoader.cs b/osu.Game/Screens/Play/PlayerLoader.cs
-index 06a177bd42..17bd8940d4 100644
+index 06a177b..17bd894 100644
 --- a/osu.Game/Screens/Play/PlayerLoader.cs
 +++ b/osu.Game/Screens/Play/PlayerLoader.cs
 @@ -356,11 +356,13 @@ protected override void LoadComplete()
@@ -3056,7 +3140,7 @@ index 06a177bd42..17bd8940d4 100644
  
          #region Screen handling
 diff --git a/osu.Game/Screens/Play/RoomSubmittingPlayer.cs b/osu.Game/Screens/Play/RoomSubmittingPlayer.cs
-index 4e4d35bd30..df1317b064 100644
+index 4e4d35b..df1317b 100644
 --- a/osu.Game/Screens/Play/RoomSubmittingPlayer.cs
 +++ b/osu.Game/Screens/Play/RoomSubmittingPlayer.cs
 @@ -48,7 +48,7 @@ protected RoomSubmittingPlayer(Room room, PlaylistItem playlistItem, PlayerConfi
@@ -3069,7 +3153,7 @@ index 4e4d35bd30..df1317b064 100644
      }
  }
 diff --git a/osu.Game/Screens/Play/SoloPlayer.cs b/osu.Game/Screens/Play/SoloPlayer.cs
-index ee891dd816..2011cad883 100644
+index ee891dd..2011cad 100644
 --- a/osu.Game/Screens/Play/SoloPlayer.cs
 +++ b/osu.Game/Screens/Play/SoloPlayer.cs
 @@ -59,7 +59,7 @@ protected override APIRequest<MultiplayerScore> CreateSubmissionRequest(Score sc
@@ -3082,10 +3166,10 @@ index ee891dd816..2011cad883 100644
      }
  }
 diff --git a/osu.Game/Screens/Play/SubmittingPlayer.cs b/osu.Game/Screens/Play/SubmittingPlayer.cs
-index c930783f99..5549095929 100644
+index 3d201b2..5814e97 100644
 --- a/osu.Game/Screens/Play/SubmittingPlayer.cs
 +++ b/osu.Game/Screens/Play/SubmittingPlayer.cs
-@@ -17,6 +17,7 @@
+@@ -18,6 +18,7 @@
  using osu.Game.Online;
  using osu.Game.Online.API;
  using osu.Game.Online.Multiplayer;
@@ -3093,7 +3177,7 @@ index c930783f99..5549095929 100644
  using osu.Game.Online.Rooms;
  using osu.Game.Online.Spectator;
  using osu.Game.Overlays;
-@@ -54,6 +55,10 @@ public abstract partial class SubmittingPlayer : Player
+@@ -55,6 +56,10 @@ public abstract partial class SubmittingPlayer : Player
          [CanBeNull]
          private INotificationOverlay notifications { get; set; }
  
@@ -3101,10 +3185,10 @@ index c930783f99..5549095929 100644
 +        [CanBeNull]
 +        private MedalOverlay medalOverlay { get; set; }
 +
-         private readonly object scoreSubmissionLock = new object();
+         private readonly Lock scoreSubmissionLock = new Lock();
          private TaskCompletionSource<bool> scoreSubmissionSource;
  
-@@ -197,7 +202,7 @@ protected override async Task PrepareScoreForResultsAsync(Score score)
+@@ -198,7 +203,7 @@ protected override async Task PrepareScoreForResultsAsync(Score score)
  
              await submitScore(score).ConfigureAwait(false);
              spectatorClient.EndPlaying(token, GameplayState);
@@ -3123,59 +3207,21 @@ index c930783f99..5549095929 100644
                  scoreSubmissionSource.SetResult(true);
                  Logger.Log($"Score submission completed! (token:{token.Value} id:{s.ID})");
              };
-diff --git a/osu.Game/Online/UserStatisticsWatcher.cs b/osu.Game/Online/UserStatisticsWatcher.cs
-index 73ca3c9f53..5a92bdb2c0 100644
---- a/osu.Game/Online/UserStatisticsWatcher.cs
-+++ b/osu.Game/Online/UserStatisticsWatcher.cs
-@@ -61,6 +61,33 @@ public void RegisterForStatisticsUpdateAfter(ScoreInfo score)
-             });
-         }
- 
-+        /// <summary>
-+        /// Publishes the statistics update for a score which has already been fully processed by the API.
-+        /// </summary>
-+        /// <remarks>
-+        /// Zigcho commits score statistics before returning the submission response. Refetching here avoids
-+        /// losing a synchronous <c>UserScoreProcessed</c> event before the returned online score ID is registered.
-+        /// </remarks>
-+        public void RegisterForStatisticsUpdateAfterProcessedScore(ScoreInfo score)
-+        {
-+            Schedule(() =>
-+            {
-+                if (!api.IsLoggedIn)
-+                    return;
-+
-+                if (!score.Ruleset.IsLegacyRuleset() || score.OnlineID <= 0)
-+                    return;
-+
-+                var cachedStatistics = statisticsProvider.GetStatisticsFor(score.Ruleset);
-+
-+                statisticsProvider.RefetchStatistics(score.Ruleset, u => Schedule(() =>
-+                {
-+                    var before = u.OldStatistics ?? cachedStatistics ?? u.NewStatistics;
-+                    latestUpdate.Value = new ScoreBasedUserStatisticsUpdate(score, before, u.NewStatistics);
-+                }));
-+            });
-+        }
-+
-         private void userScoreProcessed(int userId, long scoreId)
-         {
-             if (userId != api.LocalUser.Value?.OnlineID)
 diff --git a/osu.Game/Users/Drawables/DrawableAvatar.cs b/osu.Game/Users/Drawables/DrawableAvatar.cs
-index bd09b95164..26033fc95b 100644
+index 137bff6..ce03f2d 100644
 --- a/osu.Game/Users/Drawables/DrawableAvatar.cs
 +++ b/osu.Game/Users/Drawables/DrawableAvatar.cs
-@@ -36,7 +36,7 @@ private void load(LargeTextureStore textures)
+@@ -37,7 +37,7 @@ private void load(LargeTextureStore textures, OnlineAssetCachingStore onlineText
              if (user != null && user.OnlineID > 1)
                  // TODO: The fallback here should not need to exist. Users should be looked up and populated via UserLookupCache or otherwise
                  // in remaining cases where this is required (chat tabs, local leaderboard), at which point this should be removed.
--                Texture = textures.Get((user as APIUser)?.AvatarUrl ?? $@"https://a.ppy.sh/{user.OnlineID}");
-+                Texture = textures.Get((user as APIUser)?.AvatarUrl ?? ZigchoProfileMedia.AvatarUrl(user.OnlineID));
+-                Texture = onlineTextures.Get((user as APIUser)?.AvatarUrl ?? $@"https://a.ppy.sh/{user.OnlineID}");
++                Texture = onlineTextures.Get((user as APIUser)?.AvatarUrl ?? ZigchoProfileMedia.AvatarUrl(user.OnlineID));
  
              Texture ??= textures.Get(@"Online/avatar-guest");
          }
 diff --git a/osu.Game/Users/Medal.cs b/osu.Game/Users/Medal.cs
-index 75718e714b..c40ebca76f 100644
+index 75718e7..c40ebca 100644
 --- a/osu.Game/Users/Medal.cs
 +++ b/osu.Game/Users/Medal.cs
 @@ -9,7 +9,8 @@ public class Medal
@@ -3190,7 +3236,7 @@ index 75718e714b..c40ebca76f 100644
  }
 diff --git a/osu.Game/Users/ZigchoProfileMedia.cs b/osu.Game/Users/ZigchoProfileMedia.cs
 new file mode 100644
-index 0000000000..9152cbf83e
+index 0000000..9152cbf
 --- /dev/null
 +++ b/osu.Game/Users/ZigchoProfileMedia.cs
 @@ -0,0 +1,12 @@
@@ -3207,7 +3253,7 @@ index 0000000000..9152cbf83e
 +    }
 +}
 diff --git a/osu.iOS/Info.plist b/osu.iOS/Info.plist
-index 8d9985d279..0b5ea20180 100644
+index 8d9985d..0b5ea20 100644
 --- a/osu.iOS/Info.plist
 +++ b/osu.iOS/Info.plist
 @@ -3,11 +3,11 @@
@@ -3311,49 +3357,3 @@ index 8d9985d279..0b5ea20180 100644
  				<string>osu</string>
  				<string>osump</string>
  			</array>
-diff --git a/osu.Game/Online/Multiplayer/MultiplayerClient.cs b/osu.Game/Online/Multiplayer/MultiplayerClient.cs
-index 7f2cb69e1f..9496ea1279 100644
---- a/osu.Game/Online/Multiplayer/MultiplayerClient.cs
-+++ b/osu.Game/Online/Multiplayer/MultiplayerClient.cs
-@@ -1251,7 +1251,11 @@ Task IStatefulUserHubClient.DisconnectRequested()
- 
-         Task IStatefulUserHubClient.ServerShuttingDown()
-         {
--            this.ReconnectWhenReady(IsConnected, () => room == null, Reconnect);
-+            Schedule(() =>
-+            {
-+                Func<Task>? leaveRoom = room == null ? null : LeaveRoom;
-+                MultiplayerClientExtensions.LeaveRoomAndReconnect(leaveRoom, Reconnect).FireAndForget();
-+            });
-             return Task.CompletedTask;
-         }
- 
-diff --git a/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs b/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
-index 71dd527d00..1be24a4377 100644
---- a/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
-+++ b/osu.Game/Online/Multiplayer/MultiplayerClientExtensions.cs
-@@ -82,6 +82,24 @@ public static void ReconnectWhenReady(this IStatefulUserHubClient client, IBinda
-             }).FireAndForget();
-         }
- 
-+        /// <summary>
-+        /// Immediately leaves any local room state before reconnecting after a
-+        /// server shutdown. Reconnection still runs if the leave request loses
-+        /// the race with the closing server.
-+        /// </summary>
-+        public static async Task LeaveRoomAndReconnect(Func<Task>? leaveRoomFunction, Func<Task> reconnectFunction)
-+        {
-+            try
-+            {
-+                if (leaveRoomFunction != null)
-+                    await leaveRoomFunction().ConfigureAwait(false);
-+            }
-+            finally
-+            {
-+                await reconnectFunction().ConfigureAwait(false);
-+            }
-+        }
-+
-         public static string? GetHubExceptionMessage(this Exception exception)
-         {
-             if (exception is HubException hubException)

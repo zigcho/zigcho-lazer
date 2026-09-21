@@ -2,12 +2,12 @@
 
 Zigcho's original patch, build scripts and packaging work use the Zigcho Public Use License in `LICENSE`.
 
-zigcho!lazer is built by applying `zigcho-client.patch` to the official [`ppy/osu`](https://github.com/ppy/osu) source at commit `12df2e4ff254975f4b66ae9efda808837ee9beea`.
+zigcho!lazer is built by applying `zigcho-client.patch` to the official [`ppy/osu`](https://github.com/ppy/osu) source at commit `aaa75b7c0a9f21d558ce84cd0ffac6c739bad8e7` (`2026.921.0-lazer`).
 
 the upstream client code is MIT-licensed:
 
 - Copyright (c) 2025 ppy Pty Ltd <contact@ppy.sh>
-- licence: [MIT](https://github.com/ppy/osu/blob/12df2e4ff254975f4b66ae9efda808837ee9beea/LICENCE)
+- licence: [MIT](https://github.com/ppy/osu/blob/aaa75b7c0a9f21d558ce84cd0ffac6c739bad8e7/LICENCE)
 
 desktop release packages include the original `ppy/osu` licence beside the Zigcho licence. ppy's MIT licence covers the client code. it does not grant rights to the osu! or ppy names, branding, artwork, music, beatmaps or other game resources.
 
