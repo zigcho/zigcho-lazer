@@ -48,14 +48,29 @@ jobs:
           ref: ${{ inputs.revision }}
           persist-credentials: false
 
-      - name: download the exact platform artifacts
+      - name: download the windows-x64 artifact
         uses: actions/download-artifact@v7
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.run_id }}
-          pattern: zigcho-lazer-*
+          name: zigcho-lazer-windows-x64
           path: artifacts/lazer
-          merge-multiple: true
+
+      - name: download the macos-arm64 artifact
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          name: zigcho-lazer-macos-arm64
+          path: artifacts/lazer
+
+      - name: download the linux-x64 artifact
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          name: zigcho-lazer-linux-x64
+          path: artifacts/lazer
 
       - name: verify every package and checksum
         env:
@@ -68,28 +83,16 @@ jobs:
           test -f "zigcho-lazer-${CLIENT_VERSION}-windows-x64.zip"
           test -f "zigcho-lazer-${CLIENT_VERSION}-macos-arm64.zip"
           test -f "zigcho-lazer-${CLIENT_VERSION}-linux-x64.zip"
-          test -f "zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk"
-          test -f "zigcho-lazer-${CLIENT_VERSION}-ios-arm64.ipa"
           upstream=$(tr -d '\r\n' < ../../upstream-commit.txt)
           for checksum in *.sha256; do
             sha256sum --check "$checksum"
           done
-          test "$(find . -maxdepth 1 -type f -name '*.sha256' | awk 'END { print NR }')" = 5
+          test "$(find . -maxdepth 1 -type f -name '*.sha256' | awk 'END { print NR }')" = 3
           for runtime in windows-x64 macos-arm64 linux-x64; do
             metadata=$(unzip -p "zigcho-lazer-${CLIENT_VERSION}-${runtime}.zip" '*/VERSION.txt')
             printf '%s\n' "$metadata" | grep -Fqx "client_version=${CLIENT_VERSION}"
             printf '%s\n' "$metadata" | grep -Fqx "client_revision=${SOURCE_REVISION}"
             printf '%s\n' "$metadata" | grep -Fqx "osu_revision=${upstream}"
-          done
-          for package in \
-            "zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk" \
-            "zigcho-lazer-${CLIENT_VERSION}-ios-arm64.ipa"
-          do
-            metadata="${package}.metadata.txt"
-            test -f "$metadata"
-            grep -Fqx "client_version=${CLIENT_VERSION}" "$metadata"
-            grep -Fqx "client_revision=${SOURCE_REVISION}" "$metadata"
-            grep -Fqx "osu_revision=${upstream}" "$metadata"
           done
 
       - name: publish the prerelease
