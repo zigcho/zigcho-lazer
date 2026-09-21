@@ -407,6 +407,58 @@ index 8367dab..7937ab4 100644
          [Test]
          public void TestActualUser()
          {
+diff --git a/osu.Game.Tests/ZigchoBuildVersionTest.cs b/osu.Game.Tests/ZigchoBuildVersionTest.cs
+new file mode 100644
+index 0000000..94eb4ab
+--- /dev/null
++++ b/osu.Game.Tests/ZigchoBuildVersionTest.cs
+@@ -0,0 +1,46 @@
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// See the LICENCE file in the official osu! source tree for full licence text.
++
++using System;
++using NUnit.Framework;
++using osu.Framework.Development;
++
++namespace osu.Game.Tests
++{
++    [TestFixture]
++    public class ZigchoBuildVersionTest
++    {
++        [TestCase("0.1.0-alpha.16+zigcho.build.4.client.12345678.osu.aaa75b7c", "0.1.0-alpha.16 (build 4)")]
++        [TestCase("0.2.0+zigcho.build.123.client.12345678", "0.2.0 (build 123)")]
++        public void TestPackagedZeroMajorBuildShowsVersion(string informationalVersion, string expected)
++        {
++            using var game = new VersionTestGame(informationalVersion);
++            Assert.That(game.Version, Is.EqualTo(expected));
++            // Displaying our version must not opt the portable client into upstream deployment behaviour.
++            Assert.That(game.IsDeployedBuild, Is.False);
++        }
++
++        [TestCase(null)]
++        [TestCase("0.0.0+local")]
++        [TestCase("0.1.0-alpha.16+zigcho.build.0.client.12345678")]
++        [TestCase("0.1.0-alpha.16+zigcho.build.nope.client.12345678")]
++        public void TestUnnumberedBuildKeepsLocalLabel(string? informationalVersion)
++        {
++            using var game = new VersionTestGame(informationalVersion);
++            Assert.That(game.Version, Is.EqualTo("local " + (DebugUtils.IsDebugBuild ? "debug" : "release")));
++        }
++
++        private partial class VersionTestGame : OsuGameBase
++        {
++            private readonly string? informationalVersion;
++
++            public VersionTestGame(string? informationalVersion)
++            {
++                this.informationalVersion = informationalVersion;
++            }
++
++            public override Version AssemblyVersion => new Version(0, 1, 0, 0);
++            protected override string? AssemblyInformationalVersion => informationalVersion;
++        }
++    }
++}
 diff --git a/osu.Game.Tests/ZigchoLeaderboardAvailabilityTest.cs b/osu.Game.Tests/ZigchoLeaderboardAvailabilityTest.cs
 new file mode 100644
 index 0000000..638d463
@@ -2473,10 +2525,18 @@ index 5b26173..ac63fd5 100644
              loadComponentSingleFile(new BackgroundDataStoreProcessor(), Add);
              loadComponentSingleFile<BeatmapStore>(detachedBeatmapStore = new RealmDetachedBeatmapStore(), Add, true);
 diff --git a/osu.Game/OsuGameBase.cs b/osu.Game/OsuGameBase.cs
-index 5fe20ef..0b05f20 100644
+index 5fe20ef..da47773 100644
 --- a/osu.Game/OsuGameBase.cs
 +++ b/osu.Game/OsuGameBase.cs
-@@ -78,9 +78,9 @@ namespace osu.Game
+@@ -8,6 +8,7 @@
+ using System.IO;
+ using System.Linq;
+ using System.Reflection;
++using System.Text.RegularExpressions;
+ using System.Threading;
+ using System.Threading.Tasks;
+ using JetBrains.Annotations;
+@@ -78,9 +79,9 @@ namespace osu.Game
      public partial class OsuGameBase : Framework.Game, ICanAcceptFiles, IBeatSyncProvider
      {
  #if DEBUG
@@ -2488,6 +2548,35 @@ index 5fe20ef..0b05f20 100644
  #endif
  
          public const string OSU_PROTOCOL = "osu://";
+@@ -120,17 +121,24 @@ public virtual EndpointConfiguration CreateEndpoints() =>
+ 
+         public bool IsDeployedBuild => AssemblyVersion.Major > 0;
+ 
++        protected virtual string AssemblyInformationalVersion => Assembly.GetEntryAssembly()?
++            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
++
+         public virtual string Version
+         {
+             get
+             {
++                string informationalVersion = AssemblyInformationalVersion;
++
++                // Zigcho's 0.x releases are packaged builds even though upstream's year-based check says otherwise.
++                var zigchoBuild = Regex.Match(informationalVersion ?? string.Empty,
++                    @"^(?<version>[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?)\+zigcho\.build\.(?<build>[1-9][0-9]*)\.");
++                if (zigchoBuild.Success)
++                    return $"{zigchoBuild.Groups["version"].Value} (build {zigchoBuild.Groups["build"].Value})";
++
+                 if (!IsDeployedBuild)
+                     return @"local " + (DebugUtils.IsDebugBuild ? @"debug" : @"release");
+ 
+-                string informationalVersion = Assembly.GetEntryAssembly()?
+-                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+-                    .InformationalVersion;
+-
+                 // Example: [assembly: AssemblyInformationalVersion("2025.613.0-tachyon+d934e574b2539e8787956c3c9ecce9dadebb10ee")]
+                 if (!string.IsNullOrEmpty(informationalVersion))
+                     return informationalVersion.Split('+').First();
 diff --git a/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs b/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs
 index 37a29b1..e9268fd 100644
 --- a/osu.Game/Overlays/BeatmapListing/BeatmapListingFilterControl.cs

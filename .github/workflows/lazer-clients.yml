@@ -15,7 +15,7 @@ concurrency:
 
 env:
   OSU_REVISION: aaa75b7c0a9f21d558ce84cd0ffac6c739bad8e7
-  CLIENT_TEST_FILTER: FullyQualifiedName~TrustedDomainOnlineStoreTest|FullyQualifiedName~PollingChatClientTest|FullyQualifiedName~ZigchoPollingPresenceTest|FullyQualifiedName~ZigchoPlaylistRoomResponseTest|FullyQualifiedName~ZigchoProfileMedalsTest|FullyQualifiedName~ZigchoProfileResponseTest|FullyQualifiedName~ZigchoStaticRouteResponseTest|FullyQualifiedName~TestShowRefreshesSearch|FullyQualifiedName~TestSingleRatingBucket|FullyQualifiedName~TestZigchoMedalsRender|FullyQualifiedName~ZigchoLeaderboardAvailabilityTest|FullyQualifiedName~ZigchoLeaderboardModsTest|FullyQualifiedName~ZigchoRealtimeServicePolicyTest|FullyQualifiedName~ZigchoScoreResponseTest
+  CLIENT_TEST_FILTER: FullyQualifiedName~TrustedDomainOnlineStoreTest|FullyQualifiedName~PollingChatClientTest|FullyQualifiedName~ZigchoPollingPresenceTest|FullyQualifiedName~ZigchoPlaylistRoomResponseTest|FullyQualifiedName~ZigchoProfileMedalsTest|FullyQualifiedName~ZigchoProfileResponseTest|FullyQualifiedName~ZigchoStaticRouteResponseTest|FullyQualifiedName~TestShowRefreshesSearch|FullyQualifiedName~TestSingleRatingBucket|FullyQualifiedName~TestZigchoMedalsRender|FullyQualifiedName~ZigchoLeaderboardAvailabilityTest|FullyQualifiedName~ZigchoLeaderboardModsTest|FullyQualifiedName~ZigchoRealtimeServicePolicyTest|FullyQualifiedName~ZigchoScoreResponseTest|FullyQualifiedName~ZigchoBuildVersionTest
 
 jobs:
   client-tests:
@@ -136,11 +136,11 @@ jobs:
           dotnet publish work/osu-client/osu.Desktop/osu.Desktop.csproj \
             -c Release -r osx-arm64 --self-contained true -o "$publish" \
             -p:Version="$version" -p:FileVersion="$numeric" -p:AssemblyVersion="$numeric" \
-            -p:InformationalVersion="$version+zigcho.${GITHUB_SHA:0:8}.osu.${OSU_REVISION:0:8}" \
+            -p:InformationalVersion="$version+zigcho.build.${GITHUB_RUN_NUMBER}.client.${GITHUB_SHA:0:8}.osu.${OSU_REVISION:0:8}" \
             -p:DebugType=None -p:DebugSymbols=false
           python3 package-desktop.py \
             --publish-dir "$publish" --output-dir artifacts/lazer --runtime macos-arm64 \
-            --version "$version" --client-revision "$GITHUB_SHA" --osu-revision "$OSU_REVISION" \
+            --version "$version" --build-number "$GITHUB_RUN_NUMBER" --client-revision "$GITHUB_SHA" --osu-revision "$OSU_REVISION" \
             --zigcho-license LICENSE --osu-license work/osu-client/LICENCE
 
       - name: upload the macOS package
@@ -183,11 +183,11 @@ jobs:
           dotnet publish work/osu-client/osu.Desktop/osu.Desktop.csproj \
             -c Release -r linux-x64 --self-contained true -o "$publish" \
             -p:Version="$version" -p:FileVersion="$numeric" -p:AssemblyVersion="$numeric" \
-            -p:InformationalVersion="$version+zigcho.${GITHUB_SHA:0:8}.osu.${OSU_REVISION:0:8}" \
+            -p:InformationalVersion="$version+zigcho.build.${GITHUB_RUN_NUMBER}.client.${GITHUB_SHA:0:8}.osu.${OSU_REVISION:0:8}" \
             -p:DebugType=None -p:DebugSymbols=false
           python3 package-desktop.py \
             --publish-dir "$publish" --output-dir artifacts/lazer --runtime linux-x64 \
-            --version "$version" --client-revision "$GITHUB_SHA" --osu-revision "$OSU_REVISION" \
+            --version "$version" --build-number "$GITHUB_RUN_NUMBER" --client-revision "$GITHUB_SHA" --osu-revision "$OSU_REVISION" \
             --zigcho-license LICENSE --osu-license work/osu-client/LICENCE
 
       - name: upload the Linux package

@@ -38,6 +38,8 @@ the workflow applies the patch from a clean checkout, runs the focused client te
 - macOS arm64
 - Linux x64
 
+the in-game version label includes our GitHub workflow build number, for example `0.1.0-alpha.16 (build 4)`. `VERSION.txt` records the same number alongside the source commits.
+
 every artifact has a SHA-256 sidecar. desktop builds are portable folders with no installer or updater. Android and iOS are outside the current release scope.
 
 `run-local-debug.sh` is only for the loopback QA lane. production builds always use HTTPS on the normal `kai.ovh` hosts.

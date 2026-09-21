@@ -2,6 +2,7 @@
 param(
     [string]$Checkout = "work/osu-client",
     [string]$OutputDirectory = "artifacts/lazer",
+    [string]$BuildNumber = $env:GITHUB_RUN_NUMBER,
     [switch]$Force
 )
 
@@ -20,6 +21,10 @@ if ($LASTEXITCODE -ne 0 -or $ClientRevision -notmatch "^[0-9a-f]{40}$") {
 }
 if ($env:GITHUB_SHA -and $env:GITHUB_SHA -ne $ClientRevision) {
     throw "checked out client revision does not match GITHUB_SHA"
+}
+
+if ($BuildNumber -notmatch "^[1-9][0-9]*$") {
+    throw "a positive build number is required (GITHUB_RUN_NUMBER or -BuildNumber)"
 }
 
 $Dotnet = if ($env:ZIGCHO_DOTNET) { $env:ZIGCHO_DOTNET } else { "dotnet" }
@@ -47,7 +52,7 @@ try {
         "-p:Version=$Version" `
         "-p:FileVersion=$NumericVersion" `
         "-p:AssemblyVersion=$NumericVersion" `
-        "-p:InformationalVersion=$Version+client.$($ClientRevision.Substring(0, 8)).osu.$($OsuRevision.Substring(0, 8))" `
+        "-p:InformationalVersion=$Version+zigcho.build.$BuildNumber.client.$($ClientRevision.Substring(0, 8)).osu.$($OsuRevision.Substring(0, 8))" `
         -p:DebugType=None -p:DebugSymbols=false
     if ($LASTEXITCODE -ne 0) { throw "Windows publish failed" }
 
@@ -56,6 +61,7 @@ try {
         "--publish-dir", $PublishDirectory,
         "--output-dir", $OutputDirectory,
         "--version", $Version,
+        "--build-number", $BuildNumber,
         "--client-revision", $ClientRevision,
         "--osu-revision", $OsuRevision,
         "--zigcho-license", (Join-Path $RepoRoot "LICENSE"),

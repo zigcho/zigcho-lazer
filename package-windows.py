@@ -44,6 +44,7 @@ def main() -> None:
     parser.add_argument("--publish-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--version", required=True)
+    parser.add_argument("--build-number", required=True)
     parser.add_argument("--client-revision", required=True)
     parser.add_argument("--osu-revision", required=True)
     parser.add_argument("--zigcho-license", type=Path, required=True)
@@ -51,6 +52,8 @@ def main() -> None:
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
+    if not re.fullmatch(r"[1-9][0-9]*", args.build_number):
+        raise SystemExit("build number must be a positive integer")
     if not VERSION_RE.fullmatch(args.version):
         raise SystemExit(f"invalid client version: {args.version}")
     executable = args.publish_dir / "osu!.exe"
@@ -61,6 +64,11 @@ def main() -> None:
     for licence in (args.zigcho_license, args.osu_license):
         if not licence.is_file():
             raise SystemExit(f"licence missing: {licence}")
+
+    build_marker = f"{args.version}+zigcho.build.{args.build_number}.".encode("ascii")
+    managed_entry = args.publish_dir / "osu!.dll"
+    if not managed_entry.is_file() or build_marker not in managed_entry.read_bytes():
+        raise SystemExit("client assembly is missing the expected version and build number")
 
     root = f"zigcho-lazer-{args.version}-windows-x64"
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -75,6 +83,7 @@ def main() -> None:
 
     version_text = (
         f"client_version={args.version}\n"
+        f"build_number={args.build_number}\n"
         f"client_revision={args.client_revision}\n"
         f"osu_revision={args.osu_revision}\n"
         "runtime=win-x64\n"

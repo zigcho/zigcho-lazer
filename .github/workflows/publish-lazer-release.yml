@@ -27,6 +27,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: validate the source run
+        id: source
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN: ${{ inputs.run_id }}
@@ -41,6 +42,9 @@ jobs:
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .status)" = "completed"
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .conclusion)" = "success"
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .head_sha)" = "$SOURCE_REVISION"
+          build_number=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .run_number)
+          [[ "$build_number" =~ ^[1-9][0-9]*$ ]]
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
 
       - name: check out the exact release source
         uses: actions/checkout@v6
@@ -74,6 +78,7 @@ jobs:
 
       - name: verify every package and checksum
         env:
+          BUILD_NUMBER: ${{ steps.source.outputs.build_number }}
           CLIENT_VERSION: ${{ inputs.version }}
           SOURCE_REVISION: ${{ inputs.revision }}
         run: |
@@ -91,6 +96,7 @@ jobs:
           for runtime in windows-x64 macos-arm64 linux-x64; do
             metadata=$(unzip -p "zigcho-lazer-${CLIENT_VERSION}-${runtime}.zip" '*/VERSION.txt')
             printf '%s\n' "$metadata" | grep -Fqx "client_version=${CLIENT_VERSION}"
+            printf '%s\n' "$metadata" | grep -Fqx "build_number=${BUILD_NUMBER}"
             printf '%s\n' "$metadata" | grep -Fqx "client_revision=${SOURCE_REVISION}"
             printf '%s\n' "$metadata" | grep -Fqx "osu_revision=${upstream}"
           done
