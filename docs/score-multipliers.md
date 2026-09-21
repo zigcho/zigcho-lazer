@@ -33,7 +33,7 @@ examples, changing one setting at a time:
 - Wind Up/Down use 80% of the easier endpoint's multiplier plus 20% of the harder endpoint's multiplier. all-faster ramps give a bonus; all-slower ramps lose score. pitch changes are neutral.
 - osu/taiko/catch Flashlight keeps a bonus with custom settings. the default bonus is divided by `size^0.75`, capped at +0.50. disabling combo-based shrinking divides that bonus by five. smaller visibility earns more, larger visibility earns less. osu's Freeze Frame combination still halves the visibility bonus.
 - Approach Different is neutral: it changes the approach-circle animation, not the targets or judgement rules.
-- selecting a mania key-count mod matching the map's original key count is neutral. actual key-count conversions retain their existing factor.
+- selecting a mania key-count mod matching a native mania map's original key count is neutral. actual key-count conversions and converts from other modes retain their existing factor.
 
 ## intentionally retained
 
@@ -41,6 +41,6 @@ No Fail, Easy, Relax, Autopilot, Spun Out, slower playback, adaptive speed, magn
 
 ## existing scores
 
-new gameplay uses this policy. stored/replayed scores opt into it only when their client version identifies a numbered Zigcho alpha.17-or-newer build. older Zigcho, official and unknown versions retain their original multiplier during score normalisation. no existing scores or player stats are rewritten by this client change.
+new gameplay uses this policy. stored/replayed scores opt into it only when their client version identifies a numbered Zigcho alpha.17-or-newer build. older Zigcho, official and unknown versions retain their original multiplier during score normalisation. historical migration jobs continue using the upstream multiplier version they already targeted, and score tooltips receive the recorded score context. no existing scores or player stats are rewritten by this client change.
 
 CI checks current setting sweeps, mode-specific behaviour, mixed assistance mods, actual one-hit score processing, and the original upstream multiplier tables as historical-score compatibility tests.
