@@ -33,7 +33,7 @@ examples, changing one setting at a time:
 - Wind Up/Down use 80% of the easier endpoint's multiplier plus 20% of the harder endpoint's multiplier. all-faster ramps give a bonus; all-slower ramps lose score. pitch changes are neutral.
 - osu/taiko/catch Flashlight keeps a bonus with custom settings. the default bonus is divided by `size^0.75`, capped at +0.50. disabling combo-based shrinking divides that bonus by five. smaller visibility earns more, larger visibility earns less. osu's Freeze Frame combination still halves the visibility bonus.
 - Approach Different is neutral: it changes the approach-circle animation, not the targets or judgement rules.
-- selecting a mania key-count mod matching a native mania map's original key count is neutral. actual key-count conversions and converts from other modes retain their existing factor.
+- key-count mods are neutral on native mania maps because the converter ignores them there. converts from other modes retain their existing factor.
 
 ## intentionally retained
 

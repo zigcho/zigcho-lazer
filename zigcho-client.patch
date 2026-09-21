@@ -241,7 +241,7 @@ index cc7e270..cc62b4a 100644
          public void ApplyToBeatmap(IBeatmap beatmap)
          {
 diff --git a/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs b/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
-index c89043e..efda768 100644
+index c89043e..89ed370 100644
 --- a/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
 +++ b/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
 @@ -83,6 +83,33 @@ public ManiaScoreMultiplierCalculator(ScoreMultiplierContext context)
@@ -256,16 +256,16 @@ index c89043e..efda768 100644
 +                Single<ManiaModDaycore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
 +                Single<ModWindUp>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
 +                Single<ModWindDown>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
-+                Single<ManiaModKey1>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey2>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey3>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey4>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey5>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey6>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey7>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey8>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey9>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
-+                Single<ManiaModKey10>(hasMultiplier: mod => Context.OriginalRulesetId == 3 && mod.KeyCount == Math.Round(Context.BeatmapDifficultyWithoutMods.CircleSize) ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey1>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey2>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey3>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey4>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey5>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey6>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey7>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey8>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey9>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey10>(hasMultiplier: Context.OriginalRulesetId == 3 ? 1 : keyModMultiplier(Context.Score));
 +            }
 +        }
 +
@@ -1228,10 +1228,10 @@ index 0000000..c1bf7bd
 +}
 diff --git a/osu.Game.Tests/ZigchoScoreMultiplierTest.cs b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
 new file mode 100644
-index 0000000..3829c20
+index 0000000..648a608
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,275 @@
 +// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 +// See the LICENCE file in the official osu! source tree for full licence text.
 +
@@ -1245,6 +1245,7 @@ index 0000000..3829c20
 +using osu.Game.Rulesets.Catch.Mods;
 +using osu.Game.Rulesets.Judgements;
 +using osu.Game.Rulesets.Mania;
++using osu.Game.Rulesets.Mania.Beatmaps;
 +using osu.Game.Rulesets.Mania.Mods;
 +using osu.Game.Rulesets.Mods;
 +using osu.Game.Rulesets.Objects;
@@ -1353,8 +1354,21 @@ index 0000000..3829c20
 +            Assert.That(calculate(2, [new CatchModDifficultyAdjust { OverallDifficulty = { Value = 10 } }]), Is.EqualTo(1));
 +            Assert.That(calculate(0, [new OsuModApproachDifferent()]), Is.EqualTo(1));
 +            Assert.That(calculate(3, [new ManiaModKey4()]), Is.EqualTo(1));
-+            Assert.That(calculate(3, [new ManiaModKey7()]), Is.EqualTo(0.9));
++            Assert.That(calculate(3, [new ManiaModKey7()]), Is.EqualTo(1));
++            Assert.That(calculate(3, [new ManiaModKey7()], originalMode: 0), Is.EqualTo(0.9));
 +            Assert.That(calculate(3, [new ManiaModKey4()], originalMode: 0), Is.EqualTo(0.9));
++        }
++
++        [Test]
++        public void TestNativeManiaKeyModDoesNotChangeTheMap()
++        {
++            var native = new TestBeatmap(new ManiaRuleset().RulesetInfo) { Difficulty = baseline() };
++            var converter = new ManiaBeatmapConverter(native, new ManiaRuleset());
++            int originalColumns = converter.TargetColumns;
++            var mod = new ManiaModKey7();
++            mod.ApplyToBeatmapConverter(converter);
++            Assert.That(converter.TargetColumns, Is.EqualTo(originalColumns));
++            Assert.That(calculate(3, [mod]), Is.EqualTo(1));
 +        }
 +
 +        [TestCase(0)]
