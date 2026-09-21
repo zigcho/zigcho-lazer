@@ -74,6 +74,85 @@ index 28efaeb..8e662d7 100644
      <ApplicationIcon>lazer.ico</ApplicationIcon>
      <Version>0.0.0</Version>
      <FileVersion>0.0.0</FileVersion>
+diff --git a/osu.Game.Rulesets.Catch.Tests/CatchScoreMultiplierTest.cs b/osu.Game.Rulesets.Catch.Tests/CatchScoreMultiplierTest.cs
+index a4c3bca..5a6261b 100644
+--- a/osu.Game.Rulesets.Catch.Tests/CatchScoreMultiplierTest.cs
++++ b/osu.Game.Rulesets.Catch.Tests/CatchScoreMultiplierTest.cs
+@@ -153,8 +153,8 @@ public CatchScoreMultiplierTest()
+         ];
+ 
+         [TestCaseSource(nameof(test_cases))]
+-        public void TestMultipliers(Mod[] mods, double expectedMultiplier)
+-            => TestModCombination(mods, expectedMultiplier);
++        public void TestHistoricalMultipliers(Mod[] mods, double expectedMultiplier)
++            => TestModCombination(mods, expectedMultiplier, new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = "2026.921.0" });
+ 
+         [TestCase(30000001, 0.96)]
+         [TestCase(30000009, 0.96)]
+diff --git a/osu.Game.Rulesets.Catch/Scoring/CatchScoreMultiplierCalculator.cs b/osu.Game.Rulesets.Catch/Scoring/CatchScoreMultiplierCalculator.cs
+index a084cd3..55694f5 100644
+--- a/osu.Game.Rulesets.Catch/Scoring/CatchScoreMultiplierCalculator.cs
++++ b/osu.Game.Rulesets.Catch/Scoring/CatchScoreMultiplierCalculator.cs
+@@ -1,7 +1,11 @@
+ // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+ // See the LICENCE file in the repository root for full licence text.
+ 
++using System;
++using osu.Game.Rulesets.Objects.Legacy;
++using osu.Game.Rulesets.Catch.Objects;
+ using osu.Game.Rulesets.Catch.Mods;
++using osu.Game.Beatmaps;
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Scoring;
+ using osu.Game.Scoring;
+@@ -68,6 +72,32 @@ public CatchScoreMultiplierCalculator(ScoreMultiplierContext context)
+             // Score V2
+ 
+             #endregion
++
++            if (ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score))
++            {
++                Single<CatchModDifficultyAdjust>(hasMultiplier: difficultyAdjustMultiplier);
++                Single<CatchModHalfTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<CatchModDaycore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<CatchModDoubleTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<CatchModNightcore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<CatchModFlashlight>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Flashlight(mod, 0.12));
++                Single<ModWindUp>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++                Single<ModWindDown>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++            }
++        }
++
++        private double difficultyAdjustMultiplier(CatchModDifficultyAdjust mod)
++        {
++            var original = Context.BeatmapDifficultyWithoutMods;
++            double beforeSize = Math.Max(0.01, LegacyRulesetExtensions.CalculateScaleFromCircleSize(original.CircleSize));
++            double afterSize = Math.Max(0.01, LegacyRulesetExtensions.CalculateScaleFromCircleSize(mod.CircleSize.Value ?? original.CircleSize));
++            double beforePreempt = Math.Max(1, IBeatmapDifficultyInfo.DifficultyRangeInt(original.ApproachRate, CatchHitObject.PREEMPT_RANGE));
++            double afterPreempt = Math.Max(1, IBeatmapDifficultyInfo.DifficultyRangeInt(mod.ApproachRate.Value ?? original.ApproachRate, CatchHitObject.PREEMPT_RANGE));
++            // Catch has no OD hit windows. Scroll/visual preferences must not manufacture difficulty bonuses.
++            return ZigchoScoreMultiplierPolicy.ClampDifficulty(
++                Math.Pow(beforeSize / afterSize, 0.75) * Math.Pow(beforePreempt / afterPreempt, 0.35) *
++                ZigchoScoreMultiplierPolicy.Health(original.DrainRate, mod.DrainRate.Value ?? original.DrainRate) *
++                (mod.HardRockOffsets.Value ? 1.06 : 1));
+         }
+ 
+         private static double rateAdjustMultiplier(double speedChange)
+diff --git a/osu.Game.Rulesets.Mania.Tests/ManiaScoreMultiplierTest.cs b/osu.Game.Rulesets.Mania.Tests/ManiaScoreMultiplierTest.cs
+index cc3ac1c..82b9a4e 100644
+--- a/osu.Game.Rulesets.Mania.Tests/ManiaScoreMultiplierTest.cs
++++ b/osu.Game.Rulesets.Mania.Tests/ManiaScoreMultiplierTest.cs
+@@ -167,8 +167,8 @@ public ManiaScoreMultiplierTest()
+         ];
+ 
+         [TestCaseSource(nameof(test_cases))]
+-        public void TestMultipliers(Mod[] mods, double expectedMultiplier)
+-            => TestModCombination(mods, expectedMultiplier);
++        public void TestHistoricalMultipliers(Mod[] mods, double expectedMultiplier)
++            => TestModCombination(mods, expectedMultiplier, new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = "2026.921.0" });
+ 
+         private static readonly object[][] key_mod_multiplier_test_cases =
+         [
 diff --git a/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs b/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs
 index 4e1bcc5..e24d746 100644
 --- a/osu.Game.Rulesets.Mania/Mods/ManiaKeyMod.cs
@@ -161,6 +240,77 @@ index cc7e270..cc62b4a 100644
  
          public void ApplyToBeatmap(IBeatmap beatmap)
          {
+diff --git a/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs b/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
+index c89043e..3fc4fed 100644
+--- a/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
++++ b/osu.Game.Rulesets.Mania/Scoring/ManiaScoreMultiplierCalculator.cs
+@@ -83,6 +83,33 @@ public ManiaScoreMultiplierCalculator(ScoreMultiplierContext context)
+             // Score V2
+ 
+             #endregion
++
++            if (ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score))
++            {
++                Single<ManiaModDifficultyAdjust>(hasMultiplier: difficultyAdjustMultiplier);
++                Single<ManiaModHalfTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<ManiaModDaycore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<ModWindUp>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++                Single<ModWindDown>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++                Single<ManiaModKey1>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey2>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey3>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey4>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey5>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey6>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey7>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey8>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey9>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++                Single<ManiaModKey10>(hasMultiplier: mod => mod.KeyCount == Context.BeatmapDifficultyWithoutMods.CircleSize ? 1 : keyModMultiplier(Context.Score));
++            }
++        }
++
++        private double difficultyAdjustMultiplier(ManiaModDifficultyAdjust mod)
++        {
++            var original = Context.BeatmapDifficultyWithoutMods;
++            return ZigchoScoreMultiplierPolicy.ClampDifficulty(
++                ZigchoScoreMultiplierPolicy.Timing(original.OverallDifficulty, mod.OverallDifficulty.Value ?? original.OverallDifficulty, new ManiaHitWindows(), HitResult.Perfect) *
++                ZigchoScoreMultiplierPolicy.Health(original.DrainRate, mod.DrainRate.Value ?? original.DrainRate));
+         }
+ 
+         private static double rateAdjustMultiplier(double speedChange)
+diff --git a/osu.Game.Rulesets.Osu.Tests/OsuScoreMultiplierTest.cs b/osu.Game.Rulesets.Osu.Tests/OsuScoreMultiplierTest.cs
+index 996d081..b7c44b7 100644
+--- a/osu.Game.Rulesets.Osu.Tests/OsuScoreMultiplierTest.cs
++++ b/osu.Game.Rulesets.Osu.Tests/OsuScoreMultiplierTest.cs
+@@ -226,8 +226,8 @@ public OsuScoreMultiplierTest()
+         ];
+ 
+         [TestCaseSource(nameof(test_cases))]
+-        public void TestMultipliers(Mod[] mods, double expectedMultiplier)
+-            => TestModCombination(mods, expectedMultiplier);
++        public void TestHistoricalMultipliers(Mod[] mods, double expectedMultiplier)
++            => TestModCombination(mods, expectedMultiplier, new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = "2026.921.0" });
+ 
+         [TestCase(null, null, null, null, 1)]
+         [TestCase(2.9f, null, null, null, 0.95)]
+@@ -243,7 +243,7 @@ public void TestMultipliers(Mod[] mods, double expectedMultiplier)
+         [TestCase(2.9f, 3.9f, 4.9f, 5.9f, 0.95 * 0.95 * 0.95 * 0.95)]
+         [TestCase(0.0f, null, null, null, 0.1)]
+         [TestCase(0.0f, 0.0f, 0.0f, 0.0f, 0.1)]
+-        public void TestDifficultyAdjust(float? cs, float? ar, float? od, float? hp, double expectedMultiplier)
++        public void TestHistoricalDifficultyAdjust(float? cs, float? ar, float? od, float? hp, double expectedMultiplier)
+         {
+             var difficulty = new BeatmapDifficulty
+             {
+@@ -260,7 +260,7 @@ public void TestDifficultyAdjust(float? cs, float? ar, float? od, float? hp, dou
+                 DrainRate = { Value = hp },
+             };
+ 
+-            var calculator = Ruleset.CreateScoreMultiplierCalculator(new ScoreMultiplierContext(difficulty));
++            var calculator = Ruleset.CreateScoreMultiplierCalculator(new ScoreMultiplierContext(difficulty, new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = "2026.921.0" }));
+             Assert.That(calculator.CalculateFor([mod]), Is.EqualTo(expectedMultiplier).Within(Precision.FLOAT_EPSILON));
+         }
+ 
 diff --git a/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs b/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs
 index 76c862d..6cecbd4 100644
 --- a/osu.Game.Rulesets.Osu/Mods/OsuModSpunOut.cs
@@ -186,6 +336,148 @@ index a364190..86ebac3 100644
 +        public override bool Ranked => true;
      }
  }
+diff --git a/osu.Game.Rulesets.Osu/Scoring/OsuScoreMultiplierCalculatorV2.cs b/osu.Game.Rulesets.Osu/Scoring/OsuScoreMultiplierCalculatorV2.cs
+index a197fe6..cfd8e36 100644
+--- a/osu.Game.Rulesets.Osu/Scoring/OsuScoreMultiplierCalculatorV2.cs
++++ b/osu.Game.Rulesets.Osu/Scoring/OsuScoreMultiplierCalculatorV2.cs
+@@ -46,7 +46,7 @@ public OsuScoreMultiplierCalculatorV2(ScoreMultiplierContext context)
+             Combination<OsuModTraceable, OsuModBlinds>(hasMultiplier: (_, _) => blinds_multiplier);
+             Single<OsuModTraceable>(hasMultiplier: 1.02);
+ 
+-            Combination<OsuModFlashlight, OsuModFreezeFrame>(hasMultiplier: (flashlight, _) => 1 + (flashlightMultiplier(flashlight) - 1) / 2);
++            Combination<OsuModFlashlight, OsuModFreezeFrame>(hasMultiplier: (flashlight, _) => 1 + ((ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score) ? ZigchoScoreMultiplierPolicy.Flashlight(flashlight, 0.20) : flashlightMultiplier(flashlight)) - 1) / 2);
+             Single<OsuModFlashlight>(hasMultiplier: flashlightMultiplier);
+ 
+             Single<OsuModBlinds>(hasMultiplier: blinds_multiplier);
+@@ -58,7 +58,10 @@ public OsuScoreMultiplierCalculatorV2(ScoreMultiplierContext context)
+             #region Conversion
+ 
+             Single<OsuModTargetPractice>(hasMultiplier: 0.01);
+-            Single<OsuModDifficultyAdjust>(hasMultiplier: difficultyAdjust => difficultyAdjustMultiplier(difficultyAdjust, Context.BeatmapDifficultyWithoutMods));
++            Single<OsuModDifficultyAdjust>(hasMultiplier: difficultyAdjust =>
++                ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score)
++                    ? ZigchoDifficultyAdjustScoring.Calculate(difficultyAdjust, Context.BeatmapDifficultyWithoutMods)
++                    : difficultyAdjustMultiplier(difficultyAdjust, Context.BeatmapDifficultyWithoutMods));
+             Single<OsuModClassic>(hasMultiplier: classic => classic.ClassicNoteLock.Value ? 0.985 : 0.96);
+             Single<OsuModRandom>(hasMultiplier: 0.7);
+             // Mirror (1.0x)
+@@ -107,6 +110,18 @@ public OsuScoreMultiplierCalculatorV2(ScoreMultiplierContext context)
+             // Score V2 (1.0x)
+ 
+             #endregion
++
++            if (ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score))
++            {
++                Single<OsuModHalfTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: true));
++                Single<OsuModDaycore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: true));
++                Single<OsuModDoubleTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: true));
++                Single<OsuModNightcore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: true));
++                Single<ModWindUp>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: true));
++                Single<ModWindDown>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: true));
++                Single<OsuModFlashlight>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Flashlight(mod, 0.20));
++                Single<OsuModApproachDifferent>(hasMultiplier: 1);
++            }
+         }
+ 
+         private static double easyMultiplier(OsuModEasy easy)
+diff --git a/osu.Game.Rulesets.Osu/Scoring/ZigchoDifficultyAdjustScoring.cs b/osu.Game.Rulesets.Osu/Scoring/ZigchoDifficultyAdjustScoring.cs
+new file mode 100644
+index 0000000..f87f78e
+--- /dev/null
++++ b/osu.Game.Rulesets.Osu/Scoring/ZigchoDifficultyAdjustScoring.cs
+@@ -0,0 +1,46 @@
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// See the LICENCE file in the repository root for full licence text.
++
++using System;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Objects.Legacy;
++using osu.Game.Rulesets.Osu.Mods;
++using osu.Game.Rulesets.Osu.Objects;
++using osu.Game.Rulesets.Scoring;
++
++namespace osu.Game.Rulesets.Osu.Scoring
++{
++    public static class ZigchoDifficultyAdjustScoring
++    {
++        // This is a score policy, not a star rating or performance-point calculation.
++        public static double Calculate(OsuModDifficultyAdjust mod, IBeatmapDifficultyInfo original)
++        {
++            double circleSize = mod.CircleSize.Value ?? original.CircleSize;
++            double accuracy = mod.OverallDifficulty.Value ?? original.OverallDifficulty;
++            double approachRate = mod.ApproachRate.Value ?? original.ApproachRate;
++            double drain = mod.DrainRate.Value ?? original.DrainRate;
++
++            // Reward the relative loss of aim/timing tolerance, not the same flat bonus for every slider.
++            double aim = Math.Pow(radius(original.CircleSize) / radius(circleSize), 0.75);
++            double timing = Math.Pow(greatWindow(original.OverallDifficulty) / greatWindow(accuracy), 0.60);
++            double reading = Math.Pow(preempt(original.ApproachRate) / preempt(approachRate), 0.35);
++            double health = Math.Exp(0.02 * (drain - original.DrainRate));
++
++            // Easier settings offset harder ones; unchanged settings contribute exactly 1.
++            return Math.Clamp(aim * timing * reading * health, 0.1, 4.0);
++        }
++
++        private static double radius(double cs) => Math.Max(1,
++            OsuHitObject.OBJECT_RADIUS * LegacyRulesetExtensions.CalculateScaleFromCircleSize((float)cs, true));
++
++        private static double greatWindow(double od)
++        {
++            var windows = new OsuHitWindows();
++            windows.SetDifficulty(od);
++            return Math.Max(1, windows.WindowFor(HitResult.Great));
++        }
++
++        private static double preempt(double ar) => Math.Max(1,
++            IBeatmapDifficultyInfo.DifficultyRangeInt(ar, OsuHitObject.PREEMPT_RANGE));
++    }
++}
+diff --git a/osu.Game.Rulesets.Taiko.Tests/TaikoScoreMultiplierTest.cs b/osu.Game.Rulesets.Taiko.Tests/TaikoScoreMultiplierTest.cs
+index 4aea11a..0fc039b 100644
+--- a/osu.Game.Rulesets.Taiko.Tests/TaikoScoreMultiplierTest.cs
++++ b/osu.Game.Rulesets.Taiko.Tests/TaikoScoreMultiplierTest.cs
+@@ -155,8 +155,8 @@ public TaikoScoreMultiplierTest()
+         ];
+ 
+         [TestCaseSource(nameof(test_cases))]
+-        public void TestMultipliers(Mod[] mods, double expectedMultiplier)
+-            => TestModCombination(mods, expectedMultiplier);
++        public void TestHistoricalMultipliers(Mod[] mods, double expectedMultiplier)
++            => TestModCombination(mods, expectedMultiplier, new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = "2026.921.0" });
+ 
+         [TestCase(30000001, 0.96)]
+         [TestCase(30000009, 0.96)]
+diff --git a/osu.Game.Rulesets.Taiko/Scoring/TaikoScoreMultiplierCalculator.cs b/osu.Game.Rulesets.Taiko/Scoring/TaikoScoreMultiplierCalculator.cs
+index fa2cc20..4bb6050 100644
+--- a/osu.Game.Rulesets.Taiko/Scoring/TaikoScoreMultiplierCalculator.cs
++++ b/osu.Game.Rulesets.Taiko/Scoring/TaikoScoreMultiplierCalculator.cs
+@@ -69,6 +69,26 @@ public TaikoScoreMultiplierCalculator(ScoreMultiplierContext context)
+             // Score V2
+ 
+             #endregion
++
++            if (ZigchoScoreMultiplierPolicy.AppliesTo(Context.Score))
++            {
++                Single<TaikoModDifficultyAdjust>(hasMultiplier: difficultyAdjustMultiplier);
++                Single<TaikoModHalfTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<TaikoModDaycore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<TaikoModDoubleTime>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<TaikoModNightcore>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Rate(mod.SpeedChange.Value, osu: false));
++                Single<TaikoModFlashlight>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.Flashlight(mod, 0.12));
++                Single<ModWindUp>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++                Single<ModWindDown>(hasMultiplier: mod => ZigchoScoreMultiplierPolicy.TimeRamp(mod, osu: false));
++            }
++        }
++
++        private double difficultyAdjustMultiplier(TaikoModDifficultyAdjust mod)
++        {
++            var original = Context.BeatmapDifficultyWithoutMods;
++            return ZigchoScoreMultiplierPolicy.ClampDifficulty(
++                ZigchoScoreMultiplierPolicy.Timing(original.OverallDifficulty, mod.OverallDifficulty.Value ?? original.OverallDifficulty, new TaikoHitWindows()) *
++                ZigchoScoreMultiplierPolicy.Health(original.DrainRate, mod.DrainRate.Value ?? original.DrainRate));
+         }
+ 
+         private static double rateAdjustMultiplier(double speedChange)
 diff --git a/osu.Game.Tests/PollingChatClientTest.cs b/osu.Game.Tests/PollingChatClientTest.cs
 new file mode 100644
 index 0000000..99b2466
@@ -409,7 +701,7 @@ index 8367dab..7937ab4 100644
          {
 diff --git a/osu.Game.Tests/ZigchoBuildVersionTest.cs b/osu.Game.Tests/ZigchoBuildVersionTest.cs
 new file mode 100644
-index 0000000..94eb4ab
+index 0000000..2bf995c
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoBuildVersionTest.cs
 @@ -0,0 +1,46 @@
@@ -423,7 +715,7 @@ index 0000000..94eb4ab
 +namespace osu.Game.Tests
 +{
 +    [TestFixture]
-+    public class ZigchoBuildVersionTest
++    public partial class ZigchoBuildVersionTest
 +    {
 +        [TestCase("0.1.0-alpha.16+zigcho.build.4.client.12345678.osu.aaa75b7c", "0.1.0-alpha.16 (build 4)")]
 +        [TestCase("0.2.0+zigcho.build.123.client.12345678", "0.2.0 (build 123)")]
@@ -931,6 +1223,257 @@ index 0000000..c1bf7bd
 +                    return Task.CompletedTask;
 +                }));
 +            Assert.That(reconnected, Is.True);
++        }
++    }
++}
+diff --git a/osu.Game.Tests/ZigchoScoreMultiplierTest.cs b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
+new file mode 100644
+index 0000000..325e8d1
+--- /dev/null
++++ b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
+@@ -0,0 +1,245 @@
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// See the LICENCE file in the official osu! source tree for full licence text.
++
++using System;
++using System.Collections.Generic;
++using NUnit.Framework;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets;
++using osu.Game.Rulesets.Catch;
++using osu.Game.Rulesets.Catch.Mods;
++using osu.Game.Rulesets.Judgements;
++using osu.Game.Rulesets.Mania;
++using osu.Game.Rulesets.Mania.Mods;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Objects;
++using osu.Game.Rulesets.Osu;
++using osu.Game.Rulesets.Osu.Judgements;
++using osu.Game.Rulesets.Osu.Mods;
++using osu.Game.Rulesets.Osu.Objects;
++using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Taiko;
++using osu.Game.Rulesets.Taiko.Mods;
++using osu.Game.Scoring;
++using osu.Game.Scoring.Legacy;
++using osu.Game.Tests.Beatmaps;
++
++namespace osu.Game.Tests
++{
++    [TestFixture]
++    public class ZigchoScoreMultiplierTest
++    {
++        private static BeatmapDifficulty baseline() => new BeatmapDifficulty
++        {
++            CircleSize = 4, ApproachRate = 9, OverallDifficulty = 8, DrainRate = 6,
++        };
++
++        private static Ruleset ruleset(int mode) => mode switch
++        {
++            0 => new OsuRuleset(), 1 => new TaikoRuleset(), 2 => new CatchRuleset(), 3 => new ManiaRuleset(),
++            _ => throw new ArgumentOutOfRangeException(nameof(mode)),
++        };
++
++        private static ModDifficultyAdjust difficultyAdjust(int mode) => mode switch
++        {
++            0 => new OsuModDifficultyAdjust(), 1 => new TaikoModDifficultyAdjust(),
++            2 => new CatchModDifficultyAdjust(), 3 => new ManiaModDifficultyAdjust(),
++            _ => throw new ArgumentOutOfRangeException(nameof(mode)),
++        };
++
++        private static double calculate(int mode, Mod[] mods, BeatmapDifficulty? difficulty = null, ScoreInfo? score = null)
++            => ruleset(mode).CreateScoreMultiplierCalculator(new ScoreMultiplierContext(difficulty ?? baseline(), score)).CalculateFor(mods);
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        [TestCase(3)]
++        public void TestUnchangedDifficultyAdjustIsNeutral(int mode)
++        {
++            var mod = difficultyAdjust(mode);
++            Assert.That(calculate(mode, [mod]), Is.EqualTo(1));
++            mod.DrainRate.Value = 6;
++            mod.OverallDifficulty.Value = 8;
++            Assert.That(calculate(mode, [mod]), Is.EqualTo(1));
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(3)]
++        public void TestAccuracyAdjustmentFollowsActualDifficulty(int mode)
++        {
++            var mod = difficultyAdjust(mode);
++            mod.OverallDifficulty.Value = 10;
++            double harder = calculate(mode, [mod]);
++            Assert.That(harder, Is.GreaterThan(1.1));
++            mod.OverallDifficulty.Value = 6;
++            Assert.That(calculate(mode, [mod]), Is.LessThan(1));
++            mod.OverallDifficulty.Value = 8;
++            mod.DrainRate.Value = 8;
++            Assert.That(calculate(mode, [mod]), Is.InRange(1.03, 1.05));
++            Assert.That(harder, Is.GreaterThan(calculate(mode, [mod])));
++        }
++
++        [TestCase(0)]
++        [TestCase(2)]
++        public void TestSmallerTargetsAndFasterApproachIncreaseScore(int mode)
++        {
++            var mod = difficultyAdjust(mode);
++            var cs = mode == 0 ? ((OsuModDifficultyAdjust)mod).CircleSize : ((CatchModDifficultyAdjust)mod).CircleSize;
++            var ar = mode == 0 ? ((OsuModDifficultyAdjust)mod).ApproachRate : ((CatchModDifficultyAdjust)mod).ApproachRate;
++            cs.Value = 6;
++            Assert.That(calculate(mode, [mod]), Is.EqualTo(1.235392).Within(0.00001));
++            cs.Value = 2;
++            Assert.That(calculate(mode, [mod]), Is.LessThan(1));
++            cs.Value = null;
++            ar.Value = 10;
++            Assert.That(calculate(mode, [mod]), Is.EqualTo(1.105932).Within(0.00001));
++            ar.Value = 8;
++            Assert.That(calculate(mode, [mod]), Is.LessThan(1));
++        }
++
++        [Test]
++        public void TestMixedChangesAndOriginalMapMatter()
++        {
++            var mod = new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } };
++            Assert.That(calculate(0, [mod]), Is.EqualTo(1.333416).Within(0.00001));
++            double timingOnly = calculate(0, [mod]);
++            mod.CircleSize.Value = 2;
++            Assert.That(calculate(0, [mod]), Is.LessThan(timingOnly));
++            var harderMap = baseline();
++            harderMap.OverallDifficulty = 10;
++            Assert.That(calculate(0, [new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } }], harderMap), Is.EqualTo(1));
++        }
++
++        [Test]
++        public void TestPreferencesDoNotGenerateScoreBonuses()
++        {
++            Assert.That(calculate(1, [new TaikoModDifficultyAdjust { ScrollSpeed = { Value = 2 } }]), Is.EqualTo(1));
++            Assert.That(calculate(2, [new CatchModDifficultyAdjust { OverallDifficulty = { Value = 10 } }]), Is.EqualTo(1));
++            Assert.That(calculate(0, [new OsuModApproachDifferent()]), Is.EqualTo(1));
++            Assert.That(calculate(3, [new ManiaModKey4()]), Is.EqualTo(1));
++            Assert.That(calculate(3, [new ManiaModKey7()]), Is.EqualTo(0.9));
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        [TestCase(3)]
++        public void TestExtendedDifficultyRemainsFiniteAndBounded(int mode)
++        {
++            var mod = difficultyAdjust(mode);
++            mod.ExtendedLimits.Value = true;
++            for (int od = 0; od <= 11; od++)
++            {
++                mod.OverallDifficulty.Value = od;
++                mod.DrainRate.Value = 11;
++                double value = calculate(mode, [mod]);
++                Assert.That(double.IsFinite(value), Is.True);
++                Assert.That(value, Is.InRange(0.1, 4));
++            }
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        public void TestFasterRateNeverLowersScore(int mode)
++        {
++            ModRateAdjust mod = mode switch { 0 => new OsuModDoubleTime(), 1 => new TaikoModDoubleTime(), _ => new CatchModDoubleTime() };
++            double previous = 1;
++            for (int step = 100; step <= 200; step++)
++            {
++                mod.SpeedChange.Value = step / 100d;
++                double value = calculate(mode, [mod]);
++                Assert.That(value, Is.GreaterThanOrEqualTo(previous));
++                if (step > 100) Assert.That(value, Is.GreaterThan(1));
++                previous = value;
++            }
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        [TestCase(3)]
++        public void TestHalfTimeApproachesNeutralAtNormalSpeed(int mode)
++        {
++            ModRateAdjust mod = mode switch { 0 => new OsuModHalfTime(), 1 => new TaikoModHalfTime(), 2 => new CatchModHalfTime(), _ => new ManiaModHalfTime() };
++            Assert.That(ZigchoScoreMultiplierPolicy.Rate(1, osu: mode == 0), Is.EqualTo(1));
++            mod.SpeedChange.Value = 0.99;
++            Assert.That(calculate(mode, [mod]), Is.InRange(0.97, 1));
++            mod.SpeedChange.Value = 0.75;
++            Assert.That(calculate(mode, [mod]), Is.EqualTo(mode == 0 ? 0.55 : 0.3).Within(0.000001));
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        [TestCase(3)]
++        public void TestRampsFollowTheirActualRates(int mode)
++        {
++            Assert.That(calculate(mode, [new ModWindUp()]), Is.GreaterThan(1));
++            Assert.That(calculate(mode, [new ModWindDown()]), Is.LessThan(1));
++            var slower = new ModWindUp { InitialRate = { Value = 0.5 }, FinalRate = { Value = 0.75 } };
++            Assert.That(calculate(mode, [slower]), Is.LessThan(1));
++        }
++
++        [TestCase(0)]
++        [TestCase(1)]
++        [TestCase(2)]
++        public void TestSmallerFlashlightDoesNotLoseItsBonus(int mode)
++        {
++            ModFlashlight mod = mode switch { 0 => new OsuModFlashlight(), 1 => new TaikoModFlashlight(), _ => new CatchModFlashlight() };
++            double normal = calculate(mode, [mod]);
++            mod.SizeMultiplier.Value = 0.5f;
++            Assert.That(calculate(mode, [mod]), Is.GreaterThan(normal));
++            mod.SizeMultiplier.Value = 2;
++            Assert.That(calculate(mode, [mod]), Is.InRange(1, normal));
++        }
++
++        [Test]
++        public void TestAssistanceAndCombinationMultipliersRemainEffective()
++        {
++            var da = new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } };
++            double multiplier = calculate(0, [da]);
++            Assert.That(calculate(0, [da, new OsuModRelax()]), Is.EqualTo(multiplier * 0.1).Within(0.000001));
++            Assert.That(calculate(0, [da, new OsuModAutopilot()]), Is.EqualTo(multiplier * 0.1).Within(0.000001));
++            Assert.That(calculate(0, [da, new OsuModNoFail()]), Is.EqualTo(multiplier * 0.5).Within(0.000001));
++            var flashlight = new OsuModFlashlight { SizeMultiplier = { Value = 0.5f } };
++            Assert.That(calculate(0, [flashlight, new OsuModFreezeFrame()]),
++                Is.EqualTo(1 + (calculate(0, [flashlight]) - 1) / 2).Within(0.000001));
++        }
++
++        [TestCase("0.1.0-alpha.16 (build 4)", false)]
++        [TestCase("0.1.0-alpha.17 (build 5)", true)]
++        [TestCase("0.1.0-alpha.18 (build 8)", true)]
++        [TestCase("0.2.0 (build 9)", true)]
++        [TestCase("2026.921.0", false)]
++        [TestCase("", false)]
++        public void TestReplayPolicyVersion(string version, bool current)
++        {
++            var score = new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = version };
++            var da = new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } };
++            Assert.That(calculate(0, [da], score: score), Is.EqualTo(current ? calculate(0, [da]) : 0.1).Within(0.000001));
++            Assert.That(calculate(1, [new TaikoModDifficultyAdjust()], score: score), Is.EqualTo(current ? 1 : 0.5));
++        }
++
++        [TestCase(6, false)]
++        [TestCase(8, false)]
++        [TestCase(10, true)]
++        public void TestActualScoreProcessorUsesPreviewMultiplier(float od, bool increased)
++        {
++            var da = new OsuModDifficultyAdjust { OverallDifficulty = { Value = od } };
++            var beatmap = new TestBeatmap(new OsuRuleset().RulesetInfo)
++            {
++                Difficulty = baseline(),
++                HitObjects = new List<HitObject> { new HitCircle() },
++            };
++            using var processor = new ScoreProcessor(new OsuRuleset());
++            processor.Mods.Value = new Mod[] { da };
++            processor.ApplyBeatmap(beatmap);
++            processor.ApplyResult(new JudgementResult(beatmap.HitObjects[0], new OsuJudgement()) { Type = HitResult.Great });
++            double score = processor.GetDisplayScore(ScoringMode.Standardised);
++            Assert.That(score, Is.EqualTo(1_000_000 * calculate(0, [da])).Within(1));
++            Assert.That(score > 1_000_000, Is.EqualTo(increased));
 +        }
 +    }
 +}
@@ -3149,6 +3692,83 @@ index 2a195ad..59121aa 100644
          public override bool ValidForFreestyleAsRequiredMod => true;
  
          private readonly Bindable<bool> showHealthBar = new Bindable<bool>();
+diff --git a/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs b/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs
+new file mode 100644
+index 0000000..44a1a82
+--- /dev/null
++++ b/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs
+@@ -0,0 +1,71 @@
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// See the LICENCE file in the repository root for full licence text.
++
++using System;
++using System.Text.RegularExpressions;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Scoring;
++
++namespace osu.Game.Rulesets.Scoring
++{
++    /// <summary>Versioned score-only policy. Does not participate in difficulty or pp calculation.</summary>
++    public static class ZigchoScoreMultiplierPolicy
++    {
++        public static bool AppliesTo(ScoreInfo? score)
++        {
++            if (score == null)
++                return true;
++
++            // Unknown/official/older replays retain their original score normalisation.
++            var match = Regex.Match(score.ClientVersion ?? string.Empty,
++                @"^(?<version>[0-9]+\.[0-9]+\.[0-9]+)(?:-alpha\.(?<alpha>[0-9]+))? \(build [1-9][0-9]*\)$");
++            if (!match.Success || !Version.TryParse(match.Groups["version"].Value, out var version))
++                return false;
++
++            int comparison = version.CompareTo(new Version(0, 1, 0));
++            return comparison > 0 || (comparison == 0 &&
++                (!match.Groups["alpha"].Success || (int.TryParse(match.Groups["alpha"].Value, out int alpha) && alpha >= 17)));
++        }
++
++        public static double Timing(double original, double selected, HitWindows windows, HitResult result = HitResult.Great)
++        {
++            windows.SetDifficulty(original);
++            double before = Math.Max(1, windows.WindowFor(result));
++            windows.SetDifficulty(selected);
++            return Math.Pow(before / Math.Max(1, windows.WindowFor(result)), 0.60);
++        }
++
++        public static double Health(double original, double selected) => Math.Exp(0.02 * (selected - original));
++
++        public static double ClampDifficulty(double multiplier) => Math.Clamp(multiplier, 0.1, 4.0);
++
++        // Continuous curves through the existing normal/default-HT/default-DT values.
++        // A no-op rate is neutral; increasing speed never reduces score.
++        public static double Rate(double rate, bool osu)
++        {
++            if (rate >= 1)
++                return 1 + (rate - 1) * (osu ? 0.46 : 0.20);
++
++            double halfTime = osu ? 0.55 : 0.30;
++            double slowest = osu ? 0.20 : 0.10;
++            return rate >= 0.75
++                ? halfTime + (rate - 0.75) / 0.25 * (1 - halfTime)
++                : Math.Max(0.1, slowest + (rate - 0.5) / 0.25 * (halfTime - slowest));
++        }
++
++        public static double TimeRamp(ModTimeRamp mod, bool osu)
++        {
++            double easier = Rate(Math.Min(mod.InitialRate.Value, mod.FinalRate.Value), osu);
++            double harder = Rate(Math.Max(mod.InitialRate.Value, mod.FinalRate.Value), osu);
++            return 0.8 * easier + 0.2 * harder;
++        }
++
++        public static double Flashlight(ModFlashlight mod, double defaultBonus)
++        {
++            double bonus = defaultBonus / Math.Pow(Math.Max(0.1, mod.SizeMultiplier.Value), 0.75);
++            if (!mod.ComboBasedSize.Value)
++                bonus /= 5;
++            return 1 + Math.Min(0.5, bonus);
++        }
++    }
++}
 diff --git a/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs b/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs
 index 158b6bc..27e993d 100644
 --- a/osu.Game/Screens/Edit/Submission/SubmissionBeatmapExporter.cs
@@ -3296,6 +3916,30 @@ index 3d201b2..5814e97 100644
                  scoreSubmissionSource.SetResult(true);
                  Logger.Log($"Score submission completed! (token:{token.Value} id:{s.ID})");
              };
+diff --git a/osu.Game/Tests/Rulesets/RulesetScoreMultiplierTest.cs b/osu.Game/Tests/Rulesets/RulesetScoreMultiplierTest.cs
+index ee7c4f9..506f99e 100644
+--- a/osu.Game/Tests/Rulesets/RulesetScoreMultiplierTest.cs
++++ b/osu.Game/Tests/Rulesets/RulesetScoreMultiplierTest.cs
+@@ -8,6 +8,7 @@
+ using osu.Game.Rulesets;
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Scoring;
+ 
+ namespace osu.Game.Tests.Rulesets
+ {
+@@ -25,9 +26,9 @@ protected RulesetScoreMultiplierTest(Ruleset ruleset)
+         public void TestDefaultMultiplierIsOne()
+             => TestModCombination([], 1);
+ 
+-        protected void TestModCombination(IEnumerable<Mod> mods, double expectedMultiplier)
++        protected void TestModCombination(IEnumerable<Mod> mods, double expectedMultiplier, ScoreInfo? score = null)
+         {
+-            var calculator = Ruleset.CreateScoreMultiplierCalculator(new ScoreMultiplierContext(new BeatmapDifficulty()));
++            var calculator = Ruleset.CreateScoreMultiplierCalculator(new ScoreMultiplierContext(new BeatmapDifficulty(), score));
+             Assert.That(calculator.CalculateFor(mods), Is.EqualTo(expectedMultiplier).Within(Precision.DOUBLE_EPSILON));
+         }
+     }
 diff --git a/osu.Game/Users/Drawables/DrawableAvatar.cs b/osu.Game/Users/Drawables/DrawableAvatar.cs
 index 137bff6..ce03f2d 100644
 --- a/osu.Game/Users/Drawables/DrawableAvatar.cs

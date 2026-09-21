@@ -15,7 +15,7 @@ concurrency:
 
 env:
   OSU_REVISION: aaa75b7c0a9f21d558ce84cd0ffac6c739bad8e7
-  CLIENT_TEST_FILTER: FullyQualifiedName~TrustedDomainOnlineStoreTest|FullyQualifiedName~PollingChatClientTest|FullyQualifiedName~ZigchoPollingPresenceTest|FullyQualifiedName~ZigchoPlaylistRoomResponseTest|FullyQualifiedName~ZigchoProfileMedalsTest|FullyQualifiedName~ZigchoProfileResponseTest|FullyQualifiedName~ZigchoStaticRouteResponseTest|FullyQualifiedName~TestShowRefreshesSearch|FullyQualifiedName~TestSingleRatingBucket|FullyQualifiedName~TestZigchoMedalsRender|FullyQualifiedName~ZigchoLeaderboardAvailabilityTest|FullyQualifiedName~ZigchoLeaderboardModsTest|FullyQualifiedName~ZigchoRealtimeServicePolicyTest|FullyQualifiedName~ZigchoScoreResponseTest|FullyQualifiedName~ZigchoBuildVersionTest
+  CLIENT_TEST_FILTER: FullyQualifiedName~TrustedDomainOnlineStoreTest|FullyQualifiedName~PollingChatClientTest|FullyQualifiedName~ZigchoPollingPresenceTest|FullyQualifiedName~ZigchoPlaylistRoomResponseTest|FullyQualifiedName~ZigchoProfileMedalsTest|FullyQualifiedName~ZigchoProfileResponseTest|FullyQualifiedName~ZigchoStaticRouteResponseTest|FullyQualifiedName~TestShowRefreshesSearch|FullyQualifiedName~TestSingleRatingBucket|FullyQualifiedName~TestZigchoMedalsRender|FullyQualifiedName~ZigchoLeaderboardAvailabilityTest|FullyQualifiedName~ZigchoLeaderboardModsTest|FullyQualifiedName~ZigchoRealtimeServicePolicyTest|FullyQualifiedName~ZigchoScoreResponseTest|FullyQualifiedName~ZigchoBuildVersionTest|FullyQualifiedName~ZigchoScoreMultiplierTest
 
 jobs:
   client-tests:
@@ -44,6 +44,14 @@ jobs:
           ./apply-endpoints.sh work/osu-client
           git -C work/osu-client diff --check
           dotnet test work/osu-client/osu.Game.Tests/osu.Game.Tests.csproj -c Release --filter "$CLIENT_TEST_FILTER"
+
+      - name: verify historical score compatibility in every ruleset
+        run: |
+          set -euo pipefail
+          for mode in Osu Taiko Catch Mania; do
+            dotnet test "work/osu-client/osu.Game.Rulesets.${mode}.Tests/osu.Game.Rulesets.${mode}.Tests.csproj" \
+              -c Release --filter "FullyQualifiedName~${mode}ScoreMultiplierTest"
+          done
 
       - name: verify player-facing identity
         run: |
