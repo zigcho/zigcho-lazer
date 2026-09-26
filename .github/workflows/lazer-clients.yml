@@ -277,8 +277,8 @@ jobs:
             -p:AndroidSigningStorePass=env:ANDROID_SIGNING_PASSWORD `
             -p:DebugType=None -p:DebugSymbols=false
           if ($LASTEXITCODE -ne 0) { throw "Android publish failed" }
-          $Apks = @(Get-ChildItem work/osu-client/osu.Android/bin/Release/net10.0-android -Recurse -File -Filter *-Signed.apk)
-          if ($Apks.Count -ne 1) { throw "expected one signed Android APK, got $($Apks.Count)" }
+          $Apks = @(Get-ChildItem work/osu-client/osu.Android/bin/Release/net10.0-android -Recurse -File -Filter *-Signed.apk | Where-Object { $_.Directory.Name -eq "publish" })
+          if ($Apks.Count -ne 1) { throw "expected one published signed Android APK, got $($Apks.Count)" }
           $Apk = $Apks[0]
           $BuildTools = Get-ChildItem (Join-Path $env:ANDROID_HOME "build-tools") -Directory | Sort-Object Name -Descending | Select-Object -First 1
           if (-not $BuildTools) { throw "Android build tools are missing" }
