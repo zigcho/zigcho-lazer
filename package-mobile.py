@@ -33,7 +33,7 @@ def write_checksum(path: Path) -> Path:
     return checksum
 
 
-def write_metadata(path: Path, platform: str, version: str, client: str, osu: str) -> Path:
+def write_metadata(path: Path, platform: str, version: str, client: str, osu: str, signed: bool) -> Path:
     metadata = path.with_suffix(path.suffix + ".metadata.txt")
     metadata.write_text(
         f"client_version={version}\n"
@@ -41,7 +41,7 @@ def write_metadata(path: Path, platform: str, version: str, client: str, osu: st
         f"osu_revision={osu}\n"
         f"runtime={platform}\n"
         "client_lane=production\n"
-        "distribution_signed=false\n",
+        f"distribution_signed={'true' if signed else 'false'}\n",
         encoding="utf-8",
         newline="\n",
     )
@@ -174,6 +174,7 @@ def main() -> None:
     parser.add_argument("--version", required=True)
     parser.add_argument("--client-revision", required=True)
     parser.add_argument("--osu-revision", required=True)
+    parser.add_argument("--signed", action="store_true")
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
@@ -195,7 +196,7 @@ def main() -> None:
     else:
         package_ios(args.input, destination)
     checksum = write_checksum(destination)
-    metadata = write_metadata(destination, args.platform, args.version, args.client_revision, args.osu_revision)
+    metadata = write_metadata(destination, args.platform, args.version, args.client_revision, args.osu_revision, args.signed)
     print(destination)
     print(checksum)
     print(metadata)

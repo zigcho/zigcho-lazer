@@ -19,7 +19,7 @@ the server contract still lives in [`zigcho/zigcho`](https://github.com/zigcho/z
 1. GitHub checks out this repo and the exact `ppy/osu` commit beside it.
 2. the patch is checked before it is applied. a stale or half-applied patch stops the run.
 3. the focused upstream client tests exercise the Zigcho-specific screens and response models.
-4. Windows, macOS and Linux build on their own hosted runners.
+4. Windows, macOS, Linux and Android build on their own hosted runners.
 5. every package records the client commit and upstream osu! commit, then gets a SHA-256 sidecar and format checks before it can become a release.
 
 ## builds
@@ -37,10 +37,11 @@ the workflow applies the patch from a clean checkout, runs the focused client te
 - Windows x64
 - macOS arm64
 - Linux x64
+- Android arm64
 
 the in-game version label includes our GitHub workflow build number, for example `0.1.0-alpha.17 (build 5)`. `VERSION.txt` records the same number alongside the source commits.
 
-every artifact has a SHA-256 sidecar. desktop builds are portable folders with no installer or updater. Android and iOS are outside the current release scope.
+GitHub labels every artifact with the client version, build number and platform. the downloadable files also have the version in their names and a SHA-256 sidecar. desktop builds are portable folders with no installer or updater. Android is a signed arm64 APK; keep the same signing key for future updates. iOS is still outside this release.
 
 `run-local-debug.sh` is only for the loopback QA lane. production builds always use HTTPS on the normal `kai.ovh` hosts.
 

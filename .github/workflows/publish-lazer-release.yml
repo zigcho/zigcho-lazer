@@ -57,7 +57,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.run_id }}
-          name: zigcho-lazer-windows-x64
+          name: zigcho-lazer-${{ inputs.version }}-build${{ steps.source.outputs.build_number }}-windows-x64
           path: artifacts/lazer
 
       - name: download the macos-arm64 artifact
@@ -65,7 +65,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.run_id }}
-          name: zigcho-lazer-macos-arm64
+          name: zigcho-lazer-${{ inputs.version }}-build${{ steps.source.outputs.build_number }}-macos-arm64
           path: artifacts/lazer
 
       - name: download the linux-x64 artifact
@@ -73,7 +73,15 @@ jobs:
         with:
           github-token: ${{ github.token }}
           run-id: ${{ inputs.run_id }}
-          name: zigcho-lazer-linux-x64
+          name: zigcho-lazer-${{ inputs.version }}-build${{ steps.source.outputs.build_number }}-linux-x64
+          path: artifacts/lazer
+
+      - name: download the android-arm64 artifact
+        uses: actions/download-artifact@v7
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          name: zigcho-lazer-${{ inputs.version }}-build${{ steps.source.outputs.build_number }}-android-arm64
           path: artifacts/lazer
 
       - name: verify every package and checksum
@@ -88,11 +96,12 @@ jobs:
           test -f "zigcho-lazer-${CLIENT_VERSION}-windows-x64.zip"
           test -f "zigcho-lazer-${CLIENT_VERSION}-macos-arm64.zip"
           test -f "zigcho-lazer-${CLIENT_VERSION}-linux-x64.zip"
+          test -f "zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk"
           upstream=$(tr -d '\r\n' < ../../upstream-commit.txt)
           for checksum in *.sha256; do
             sha256sum --check "$checksum"
           done
-          test "$(find . -maxdepth 1 -type f -name '*.sha256' | awk 'END { print NR }')" = 3
+          test "$(find . -maxdepth 1 -type f -name '*.sha256' | awk 'END { print NR }')" = 4
           for runtime in windows-x64 macos-arm64 linux-x64; do
             metadata=$(unzip -p "zigcho-lazer-${CLIENT_VERSION}-${runtime}.zip" '*/VERSION.txt')
             printf '%s\n' "$metadata" | grep -Fqx "client_version=${CLIENT_VERSION}"
@@ -100,6 +109,13 @@ jobs:
             printf '%s\n' "$metadata" | grep -Fqx "client_revision=${SOURCE_REVISION}"
             printf '%s\n' "$metadata" | grep -Fqx "osu_revision=${upstream}"
           done
+          android="zigcho-lazer-${CLIENT_VERSION}-android-arm64.apk"
+          unzip -t "$android" >/dev/null
+          grep -Fqx "client_version=${CLIENT_VERSION}" "${android}.metadata.txt"
+          grep -Fqx "client_revision=${SOURCE_REVISION}" "${android}.metadata.txt"
+          grep -Fqx "osu_revision=${upstream}" "${android}.metadata.txt"
+          grep -Fqx "runtime=android-arm64" "${android}.metadata.txt"
+          grep -Fqx 'distribution_signed=true' "${android}.metadata.txt"
 
       - name: publish the prerelease
         env:
