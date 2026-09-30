@@ -1228,10 +1228,10 @@ index 0000000..c1bf7bd
 +}
 diff --git a/osu.Game.Tests/ZigchoScoreMultiplierTest.cs b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
 new file mode 100644
-index 0000000..648a608
+index 0000000..0794315
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
-@@ -0,0 +1,275 @@
+@@ -0,0 +1,299 @@
 +// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 +// See the LICENCE file in the official osu! source tree for full licence text.
 +
@@ -1459,17 +1459,41 @@ index 0000000..648a608
 +        }
 +
 +        [TestCase("0.1.0-alpha.16 (build 4)", false)]
++        [TestCase("0.1.0-alpha.16", false)]
 +        [TestCase("0.1.0-alpha.17 (build 5)", true)]
++        [TestCase("0.1.0-alpha.17", true)]
 +        [TestCase("0.1.0-alpha.18 (build 8)", true)]
 +        [TestCase("0.2.0 (build 9)", true)]
 +        [TestCase("2026.921.0", false)]
-+        [TestCase("", false)]
-+        public void TestReplayPolicyVersion(string version, bool current)
++        [TestCase("local debug", true)]
++        [TestCase("local release", true)]
++        [TestCase("", true)]
++        [TestCase(null, true)]
++        public void TestReplayPolicyVersion(string? version, bool current)
 +        {
 +            var score = new ScoreInfo { TotalScoreVersion = 30000017, ClientVersion = version };
 +            var da = new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } };
 +            Assert.That(calculate(0, [da], score: score), Is.EqualTo(current ? calculate(0, [da]) : 0.1).Within(0.000001));
 +            Assert.That(calculate(1, [new TaikoModDifficultyAdjust()], score: score), Is.EqualTo(current ? 1 : 0.5));
++        }
++
++        [Test]
++        public void TestLegacyScoreDoesNotApplyNewBonuses()
++        {
++            var score = new ScoreInfo { TotalScoreVersion = 30000017, IsLegacyScore = true };
++            var da = new OsuModDifficultyAdjust { OverallDifficulty = { Value = 10 } };
++            Assert.That(calculate(0, [da], score: score), Is.EqualTo(0.1).Within(0.000001));
++        }
++
++        [Test]
++        public void TestOnlineScoreOnLeaderboardUsesZigchoMultipliers()
++        {
++            var score = new ScoreInfo { OnlineID = 845, ClientVersion = string.Empty };
++            var da = new OsuModDifficultyAdjust { ApproachRate = { Value = 11 } };
++            var dt = new OsuModDoubleTime { SpeedChange = { Value = 1.74 } };
++            var hd = new OsuModHidden();
++            double multiplier = calculate(0, [dt, hd, da], difficulty: new BeatmapDifficulty { ApproachRate = 9 }, score: score);
++            Assert.That(multiplier, Is.GreaterThan(1.77).And.LessThan(1.78));
 +        }
 +
 +        [Test]
@@ -2940,11 +2964,12 @@ index 3f40438..c7d0259 100644
              this.roomId = roomId;
              this.playlistItemId = playlistItemId;
 diff --git a/osu.Game/Online/Rooms/SubmitScoreRequest.cs b/osu.Game/Online/Rooms/SubmitScoreRequest.cs
-index b4a91a5..5b881d2 100644
+index b4a91a5..045d775 100644
 --- a/osu.Game/Online/Rooms/SubmitScoreRequest.cs
 +++ b/osu.Game/Online/Rooms/SubmitScoreRequest.cs
 @@ -1,12 +1,17 @@
- ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+-﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
  // See the LICENCE file in the repository root for full licence text.
  
 +using System;
@@ -2961,7 +2986,7 @@ index b4a91a5..5b881d2 100644
  
  namespace osu.Game.Online.Rooms
  {
-@@ -16,10 +21,22 @@ public abstract class SubmitScoreRequest : APIRequest<MultiplayerScore>
+@@ -16,10 +21,24 @@ public abstract class SubmitScoreRequest : APIRequest<MultiplayerScore>
  
          protected readonly long ScoreId;
  
@@ -2982,11 +3007,13 @@ index b4a91a5..5b881d2 100644
 +            using var replay = new MemoryStream();
 +            new LegacyScoreEncoder(score, beatmap).Encode(replay, leaveOpen: true);
 +            payload["replay"] = Convert.ToBase64String(replay.ToArray());
++            if (!string.IsNullOrEmpty(score.ScoreInfo.ClientVersion))
++                payload["client_version"] = score.ScoreInfo.ClientVersion;
 +            serializedScore = payload.ToString(Formatting.None);
          }
  
          protected override WebRequest CreateWebRequest()
-@@ -30,10 +47,7 @@ protected override WebRequest CreateWebRequest()
+@@ -30,10 +49,7 @@ protected override WebRequest CreateWebRequest()
              req.Method = HttpMethod.Put;
              req.Timeout = 30000;
  
@@ -3805,10 +3832,10 @@ index 32d58b2..58fdf2d 100644
  
 diff --git a/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs b/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs
 new file mode 100644
-index 0000000..eded5a2
+index 0000000..e8a04fc
 --- /dev/null
 +++ b/osu.Game/Rulesets/Scoring/ZigchoScoreMultiplierPolicy.cs
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,83 @@
 +// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 +// See the LICENCE file in the repository root for full licence text.
 +
@@ -3825,13 +3852,23 @@ index 0000000..eded5a2
 +        {
 +            if (!context.UseZigchoScoreMultipliers)
 +                return false;
++
 +            var score = context.Score;
 +            if (score == null)
 +                return true;
 +
-+            // Unknown/official/older replays retain their original score normalisation.
-+            var match = Regex.Match(score.ClientVersion ?? string.Empty,
-+                @"^(?<version>[0-9]+\.[0-9]+\.[0-9]+)(?:-alpha\.(?<alpha>[0-9]+))? \(build [1-9][0-9]*\)$");
++            if (score.IsLegacyScore)
++                return false;
++
++            string clientVersion = score.ClientVersion?.Trim() ?? string.Empty;
++            if (string.IsNullOrEmpty(clientVersion) || clientVersion.StartsWith("local", StringComparison.OrdinalIgnoreCase))
++                return true;
++
++            if (Regex.IsMatch(clientVersion, @"^20[0-9]{2}\."))
++                return false;
++
++            var match = Regex.Match(clientVersion,
++                @"^(?<version>[0-9]+\.[0-9]+\.[0-9]+)(?:-alpha\.(?<alpha>[0-9]+))?(?: \(build [1-9][0-9]*\))?$");
 +            if (!match.Success || !Version.TryParse(match.Groups["version"].Value, out var version))
 +                return false;
 +

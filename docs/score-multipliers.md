@@ -41,6 +41,6 @@ No Fail, Easy, Relax, Autopilot, Spun Out, slower playback, adaptive speed, magn
 
 ## existing scores
 
-new gameplay uses this policy. stored/replayed scores opt into it only when their client version identifies a numbered Zigcho alpha.17-or-newer build. older Zigcho, official and unknown versions retain their original multiplier during score normalisation. historical migration jobs continue using the upstream multiplier version they already targeted, and score tooltips receive the recorded score context. no existing scores or player stats are rewritten by this client change.
+new gameplay uses this policy. stored, replayed, and online scores opt into it when their client version identifies a numbered Zigcho alpha.17-or-newer build, a local build, or an online score. older Zigcho (pre-alpha.17) and official osu! upstream replays retain their original multipliers during score normalisation. historical migration jobs continue using the upstream multiplier version they already targeted, and score tooltips display the active Zigcho multipliers. no existing scores or player stats are rewritten by this client change.
 
 CI checks current setting sweeps, mode-specific behaviour, mixed assistance mods, actual one-hit score processing, and the original upstream multiplier tables as historical-score compatibility tests.
