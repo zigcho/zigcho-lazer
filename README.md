@@ -24,7 +24,7 @@ the server contract still lives in [`zigcho/zigcho`](https://github.com/zigcho/z
 
 ## builds
 
-the current client is `0.1.0-alpha.17`, based on osu! `2026.921.0` and .net 10. [what changed](updates/0.1.0-alpha.17.md).
+the current client is `1.0.0`, based on osu! `2026.921.0` and .net 10. [what changed](updates/1.0.0.md).
 
 release builds happen on GitHub runners, not on somebody's laptop.
 
@@ -39,7 +39,7 @@ the workflow applies the patch from a clean checkout, runs the focused client te
 - Linux x64
 - Android arm64
 
-the in-game version label includes our GitHub workflow build number, for example `0.1.0-alpha.17 (build 5)`. `VERSION.txt` records the same number alongside the source commits.
+the in-game version label includes our GitHub workflow build number, for example `1.0.0 (build 5)`. `VERSION.txt` records the same number alongside the source commits.
 
 GitHub labels every artifact with the client version, build number and platform. the downloadable files also have the version in their names and a SHA-256 sidecar. desktop builds are portable folders with no installer or updater. Android is a signed arm64 APK; keep the same signing key for future updates. iOS is still outside this release.
 

@@ -37,7 +37,7 @@ jobs:
           set -euo pipefail
           [[ "$SOURCE_RUN" =~ ^[0-9]+$ ]]
           [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$CLIENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$ ]]
+          [[ "$CLIENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .name)" = "lazer clients"
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .status)" = "completed"
           test "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq .conclusion)" = "success"
@@ -117,7 +117,7 @@ jobs:
           grep -Fqx "runtime=android-arm64" "${android}.metadata.txt"
           grep -Fqx 'distribution_signed=true' "${android}.metadata.txt"
 
-      - name: publish the prerelease
+      - name: publish the release
         env:
           GH_TOKEN: ${{ github.token }}
           CLIENT_VERSION: ${{ inputs.version }}
@@ -129,9 +129,13 @@ jobs:
             echo "release already exists: $tag" >&2
             exit 1
           fi
+          extra_args=()
+          if [[ "$CLIENT_VERSION" =~ - ]]; then
+            extra_args+=(--prerelease)
+          fi
           gh release create "$tag" artifacts/lazer/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$SOURCE_REVISION" \
             --title "zigcho!lazer ${CLIENT_VERSION}" \
-            --prerelease \
+            "${extra_args[@]}" \
             --notes-file "updates/${CLIENT_VERSION}.md"

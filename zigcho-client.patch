@@ -701,10 +701,10 @@ index 8367dab..7937ab4 100644
          {
 diff --git a/osu.Game.Tests/ZigchoBuildVersionTest.cs b/osu.Game.Tests/ZigchoBuildVersionTest.cs
 new file mode 100644
-index 0000000..2bf995c
+index 0000000..0ebd8c3
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoBuildVersionTest.cs
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,58 @@
 +// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 +// See the LICENCE file in the official osu! source tree for full licence text.
 +
@@ -719,12 +719,22 @@ index 0000000..2bf995c
 +    {
 +        [TestCase("0.1.0-alpha.16+zigcho.build.4.client.12345678.osu.aaa75b7c", "0.1.0-alpha.16 (build 4)")]
 +        [TestCase("0.2.0+zigcho.build.123.client.12345678", "0.2.0 (build 123)")]
-+        public void TestPackagedZeroMajorBuildShowsVersion(string informationalVersion, string expected)
++        [TestCase("1.0.0+zigcho.build.11.client.12345678", "1.0.0 (build 11)")]
++        public void TestPackagedBuildShowsVersion(string informationalVersion, string expected)
 +        {
 +            using var game = new VersionTestGame(informationalVersion);
 +            Assert.That(game.Version, Is.EqualTo(expected));
 +            // Displaying our version must not opt the portable client into upstream deployment behaviour.
 +            Assert.That(game.IsDeployedBuild, Is.False);
++        }
++
++        [TestCase(2026, true)]
++        [TestCase(1, false)]
++        [TestCase(0, false)]
++        public void TestDeployedBuildRequiresUpstreamYear(int major, bool expected)
++        {
++            using var game = new VersionTestGame("0.0.0", new Version(major, 0, 0, 0));
++            Assert.That(game.IsDeployedBuild, Is.EqualTo(expected));
 +        }
 +
 +        [TestCase(null)]
@@ -740,13 +750,15 @@ index 0000000..2bf995c
 +        private partial class VersionTestGame : OsuGameBase
 +        {
 +            private readonly string? informationalVersion;
++            private readonly Version assemblyVersion;
 +
-+            public VersionTestGame(string? informationalVersion)
++            public VersionTestGame(string? informationalVersion, Version? assemblyVersion = null)
 +            {
 +                this.informationalVersion = informationalVersion;
++                this.assemblyVersion = assemblyVersion ?? new Version(1, 0, 0, 0);
 +            }
 +
-+            public override Version AssemblyVersion => new Version(0, 1, 0, 0);
++            public override Version AssemblyVersion => assemblyVersion;
 +            protected override string? AssemblyInformationalVersion => informationalVersion;
 +        }
 +    }
@@ -1228,10 +1240,10 @@ index 0000000..c1bf7bd
 +}
 diff --git a/osu.Game.Tests/ZigchoScoreMultiplierTest.cs b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
 new file mode 100644
-index 0000000..0794315
+index 0000000..84d4730
 --- /dev/null
 +++ b/osu.Game.Tests/ZigchoScoreMultiplierTest.cs
-@@ -0,0 +1,299 @@
+@@ -0,0 +1,303 @@
 +// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 +// See the LICENCE file in the official osu! source tree for full licence text.
 +
@@ -1463,7 +1475,11 @@ index 0000000..0794315
 +        [TestCase("0.1.0-alpha.17 (build 5)", true)]
 +        [TestCase("0.1.0-alpha.17", true)]
 +        [TestCase("0.1.0-alpha.18 (build 8)", true)]
++        [TestCase("0.1.0 (build 10)", true)]
++        [TestCase("0.1.0", true)]
 +        [TestCase("0.2.0 (build 9)", true)]
++        [TestCase("1.0.0 (build 11)", true)]
++        [TestCase("1.0.0", true)]
 +        [TestCase("2026.921.0", false)]
 +        [TestCase("local debug", true)]
 +        [TestCase("local release", true)]
@@ -3147,7 +3163,7 @@ index 5b26173..ac63fd5 100644
              loadComponentSingleFile(new BackgroundDataStoreProcessor(), Add);
              loadComponentSingleFile<BeatmapStore>(detachedBeatmapStore = new RealmDetachedBeatmapStore(), Add, true);
 diff --git a/osu.Game/OsuGameBase.cs b/osu.Game/OsuGameBase.cs
-index 5fe20ef..da47773 100644
+index 5fe20ef..01ed976 100644
 --- a/osu.Game/OsuGameBase.cs
 +++ b/osu.Game/OsuGameBase.cs
 @@ -8,6 +8,7 @@
@@ -3170,13 +3186,16 @@ index 5fe20ef..da47773 100644
  #endif
  
          public const string OSU_PROTOCOL = "osu://";
-@@ -120,17 +121,24 @@ public virtual EndpointConfiguration CreateEndpoints() =>
+@@ -118,19 +119,26 @@ public virtual EndpointConfiguration CreateEndpoints() =>
+         /// </summary>
+         public string VersionHash { get; private set; }
  
-         public bool IsDeployedBuild => AssemblyVersion.Major > 0;
- 
+-        public bool IsDeployedBuild => AssemblyVersion.Major > 0;
++        public bool IsDeployedBuild => AssemblyVersion.Major >= 2000;
++
 +        protected virtual string AssemblyInformationalVersion => Assembly.GetEntryAssembly()?
 +            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-+
+ 
          public virtual string Version
          {
              get
@@ -3381,18 +3400,106 @@ index ea1b9ae..b7e1fb7 100644
      }
  }
 diff --git a/osu.Game/Overlays/DevBuildBanner.cs b/osu.Game/Overlays/DevBuildBanner.cs
-index f514483..68610fa 100644
+index f514483..cb3130b 100644
 --- a/osu.Game/Overlays/DevBuildBanner.cs
 +++ b/osu.Game/Overlays/DevBuildBanner.cs
-@@ -32,7 +32,7 @@ private void load(OsuColour colours, TextureStore textures, OsuGameBase game)
-                     Origin = Anchor.BottomCentre,
-                     Font = OsuFont.Numeric.With(weight: FontWeight.Bold, size: 12),
-                     Colour = colours.YellowDark,
--                    Text = @"DEVELOPER BUILD",
-+                    Text = @"zigcho!lazer",
-                 },
-                 new Sprite
+@@ -1,48 +1,76 @@
+-﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
++// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
+ // See the LICENCE file in the repository root for full licence text.
+ 
+ using osu.Framework.Allocation;
++using osu.Framework.Extensions.Color4Extensions;
+ using osu.Framework.Graphics;
+ using osu.Framework.Graphics.Containers;
+-using osu.Framework.Graphics.Sprites;
+-using osu.Framework.Graphics.Textures;
++using osu.Framework.Graphics.Shapes;
+ using osu.Game.Graphics;
+ using osu.Game.Graphics.Sprites;
+ using osuTK;
++using osuTK.Graphics;
+ 
+ namespace osu.Game.Overlays
+ {
+     public partial class DevBuildBanner : VisibilityContainer
+     {
+         [BackgroundDependencyLoader]
+-        private void load(OsuColour colours, TextureStore textures, OsuGameBase game)
++        private void load(OsuColour colours)
+         {
+             AutoSizeAxes = Axes.Both;
+ 
+             Anchor = Anchor.BottomCentre;
+             Origin = Anchor.BottomCentre;
++            Margin = new MarginPadding { Bottom = 10 };
+ 
+             Alpha = 0;
+ 
+-            AddRange(new Drawable[]
++            InternalChild = new CircularContainer
+             {
+-                new OsuSpriteText
++                AutoSizeAxes = Axes.Both,
++                Masking = true,
++                BorderThickness = 1,
++                BorderColour = Color4.White.Opacity(0.12f),
++                Children = new Drawable[]
                  {
+-                    Anchor = Anchor.BottomCentre,
+-                    Origin = Anchor.BottomCentre,
+-                    Font = OsuFont.Numeric.With(weight: FontWeight.Bold, size: 12),
+-                    Colour = colours.YellowDark,
+-                    Text = @"DEVELOPER BUILD",
++                    new Box
++                    {
++                        RelativeSizeAxes = Axes.Both,
++                        Colour = Color4.Black.Opacity(0.55f),
++                    },
++                    new FillFlowContainer
++                    {
++                        AutoSizeAxes = Axes.Both,
++                        Direction = FillDirection.Horizontal,
++                        Spacing = new Vector2(6, 0),
++                        Padding = new MarginPadding { Horizontal = 10, Vertical = 4 },
++                        Children = new Drawable[]
++                        {
++                            new CircularContainer
++                            {
++                                Size = new Vector2(6),
++                                Anchor = Anchor.CentreLeft,
++                                Origin = Anchor.CentreLeft,
++                                Masking = true,
++                                Child = new Box
++                                {
++                                    RelativeSizeAxes = Axes.Both,
++                                    Colour = colours.Pink1,
++                                },
++                            },
++                            new OsuSpriteText
++                            {
++                                Anchor = Anchor.CentreLeft,
++                                Origin = Anchor.CentreLeft,
++                                Font = OsuFont.GetFont(size: 11, weight: FontWeight.SemiBold),
++                                Colour = colours.GrayF,
++                                Text = @"zigcho!lazer",
++                            },
++                        },
++                    },
+                 },
+-                new Sprite
+-                {
+-                    Anchor = Anchor.BottomCentre,
+-                    Origin = Anchor.BottomCentre,
+-                    Texture = textures.Get(@"Menu/dev-build-footer"),
+-                    Scale = new Vector2(0.4f, 1),
+-                    Y = 2,
+-                },
+-            });
++            };
+         }
+ 
+         protected override void PopIn()
 diff --git a/osu.Game/Overlays/MedalOverlay.cs b/osu.Game/Overlays/MedalOverlay.cs
 index 25e22ff..ec8cbaa 100644
 --- a/osu.Game/Overlays/MedalOverlay.cs
